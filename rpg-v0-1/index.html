@@ -1,0 +1,14 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>1024 RPG Prototype v0.1</title><style>*{box-sizing:border-box}body{margin:0;background:#111418;color:#eef1f4;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans TC",sans-serif}.wrap{width:min(92vw,760px);margin:auto;padding:calc(env(safe-area-inset-top) + 24px) 18px 50px}.back{color:#aeb8c4;text-decoration:none;font-weight:800}.hero{padding:34px 0 20px}.kicker{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#8f9baa;font-weight:900}.hero h1{font-size:42px;line-height:1.05;margin:8px 0 10px}.hero p{color:#b7c0ca;line-height:1.7;margin:0}.card{background:#1a1f25;border:1px solid #2a3139;border-radius:18px;padding:18px;margin:14px 0}.card h2{font-size:20px;margin:0 0 10px}.card p,.card li{color:#c1c8d0;line-height:1.7}.flow{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#0d1014;border-radius:14px;padding:14px;overflow:auto;color:#dfe7ef}.tag{display:inline-block;background:#252d35;color:#c9d4df;border-radius:999px;padding:6px 10px;margin:4px 6px 4px 0;font-size:12px;font-weight:800}.status{display:inline-block;background:#3a3020;color:#f3c978;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:900}.note{border-left:3px solid #6f8fb7;padding-left:14px;color:#b7c0ca}</style></head><body><div class="wrap"><a class="back" href="../">← Prototype Index</a><section class="hero"><div class="kicker">Concept Plan</div><h1>1024 RPG Prototype v0.1</h1><span class="status">PLAN / NOT YET PLAYABLE</span><p>第一個 RPG 方向：保留 4×4 與滑動合成，但讓棋盤上的方塊本身成為角色，滑動一次就等於進行一個戰鬥回合。</p></section><div class="card"><h2>核心玩法</h2><p>每次滑動時，角色照 1024 規則移動與合成。相同職業、相同階級的角色可以進階；完成玩家動作後，敵人進行自己的行動。</p><div class="flow">玩家滑動 → 角色移動 → 同類角色合成/進階 → 觸發職業效果 → 敵人行動 → 生成新角色或新敵人 → 下一回合</div></div><div class="card"><h2>第一版角色</h2><div><span class="tag">戰士</span><span class="tag">法師</span><span class="tag">牧師</span></div><ul><li>戰士：合成時造成近戰傷害。</li><li>法師：合成時對一列或鄰近敵人造成魔法傷害。</li><li>牧師：合成時回復隊伍生命或提供保護。</li></ul></div><div class="card"><h2>角色進階示例</h2><p>第一版先採單一路徑，避免系統過早複雜化。</p><div class="flow">戰士 2 + 戰士 2 → 戰士 4
+戰士 4 + 戰士 4 → 精銳戰士 8
+精銳戰士 8 + 精銳戰士 8 → 騎士 16</div><p class="note">未來可改成分支進階，例如同樣的 8 階戰士依裝備、聖物或事件轉職成騎士、狂戰士、聖騎士等。</p></div><div class="card"><h2>敵人系統</h2><p>敵人會實際佔據棋盤格，逐漸壓縮玩家可使用空間。角色與敵人相鄰或碰撞時發生戰鬥。</p><ul><li>普通敵人：哥布林。</li><li>敵人具有 HP。</li><li>玩家每滑一次，敵人也行動一次。</li><li>敵人可能移動、攻擊或生成。</li></ul></div><div class="card"><h2>一局遊戲的節奏</h2><div class="flow">開局 2 個低階角色
+↓
+滑動、合成、建立隊伍
+↓
+敵人逐步出現
+↓
+玩家在「盤面整理」與「攻擊位置」之間做取捨
+↓
+約第 25–30 回合 Boss 登場
+↓
+擊敗 Boss = 過關
+盤面塞滿 / 隊伍全滅 = 失敗</div></div><div class="card"><h2>v0.1 開發範圍</h2><ul><li>4×4 棋盤。</li><li>3 個職業。</li><li>1 種普通敵人。</li><li>角色與敵人 HP。</li><li>合成＝升階＋觸發職業效果。</li><li>每回合敵人行動。</li><li>1 隻 Boss。</li><li>完整勝敗流程。</li></ul><p class="note">這一版的目標不是內容量，而是確認「1024 + 回合制戰鬥」本身是否真的好玩。</p></div></div></body></html>
