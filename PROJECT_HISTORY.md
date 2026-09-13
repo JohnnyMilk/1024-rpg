@@ -178,6 +178,20 @@ Candidate work after v0.2 includes configurable board sizes such as 6x4, irregul
 
 Version 2 design principle: new systems should support the central Type 01 question, "Which direction should I swipe next?"
 
+## v0.3 handoff checkpoint — 2026-09-13
+
+The next conversation should begin Version 2 v0.3 from the stabilized v0.2 baseline. Before changing gameplay:
+- read this `PROJECT_HISTORY.md` first;
+- fetch the current `rpg-v2-v0-2/index.html`, `style.css`, `game.js`, and `help-data.js` from GitHub;
+- fetch `shared/core.js`, `shared/rpg-ui.css`, `shared/animations.js`, `shared/animations.css`, `shared/game-help.js`, and `shared/game-help.css` before duplicating or altering shared behavior;
+- preserve the v0.2 animation timing and Death Wave rules unless the user explicitly changes them;
+- preserve the repaired shared animation motion, removed log strip, clickable stat-help UI, HP-bar UI, Game Over history, and 27-skill Skill Pool unless explicitly changed;
+- Version 1 remains gameplay-frozen; only reusable shared-engine/UI maintenance may be synchronized back to V1;
+- create a new Version 2 v0.3 playable directory rather than overwriting the v0.2 archive once v0.3 implementation actually starts;
+- update `type-01-v2/index.html`, root milestone references if needed, regression tests/CI expectations, and this file whenever the v0.3 milestone changes.
+
+No v0.3 gameplay rule has been committed yet at this checkpoint. The next chat should first confirm the desired v0.3 design changes, then implement them on top of this stabilized baseline.
+
 ## Cross-conversation handoff rules
 
 When continuing development:
@@ -196,3 +210,4 @@ When continuing development:
 - Type 01 / Version 1 / v1.0: FINAL / COMPLETED — gameplay frozen; approved shared UI/animation/help infrastructure may be reused without altering rules; activity log removed.
 - Type 01 / Version 2 / v0.2: CURRENT PLAYABLE DEVELOPMENT PROTOTYPE — Skill Pool + sword-slash enemy attack + restored Game Over history + acquired-skill summary + Death Wave sequencing + hero/Boss HP bars + repaired reusable motion animations + clickable stat explanations; activity log removed.
 - Standard, V1 and V2 share reusable infrastructure instead of maintaining duplicate common behavior.
+- Next work item: begin Version 2 v0.3 from the stabilized v0.2 baseline; no v0.3 gameplay changes have been committed yet.
