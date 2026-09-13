@@ -1,0 +1,24 @@
+name: Refactor regression tests
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run regression assertions
+        run: node tests/refactor.test.js
+      - name: Syntax check shared core
+        run: node --check shared/core.js
+      - name: Syntax check standard 1024
+        run: node --check classic/game.js
+      - name: Syntax check Version 1
+        run: node --check rpg-v1-0/game.js
+      - name: Syntax check Version 2
+        run: node --check rpg-v2-v0-2/game.js
