@@ -9,13 +9,15 @@
 - `type-01-v2/index.html` — Type 01 Version 2 dedicated page and development log.
 - `rpg-v2-v0-1/index.html` — playable Version 2 v0.1 archive.
 - `rpg-v2-v0-2/index.html` — current playable Version 2 v0.2 prototype.
-- `shared/core.js` — cross-version reusable JavaScript helpers and UI render functions.
-- `shared/rpg-ui.css` — shared RPG board / HP / animation / result UI styles.
-- `tests/refactor.test.js` — shared refactor regression suite.
-- `.github/workflows/refactor-tests.yml` — automatic Node regression + syntax checks on every push.
-- `PROJECT_HISTORY.md` — persistent handoff.
+- `shared/core.js` — cross-version reusable helpers and common UI render functions.
+- `shared/rpg-ui.css` — shared RPG board, HP, result and common layout styles.
+- `shared/animations.js` — reusable animation registry/API.
+- `shared/animations.css` — reusable animation visuals and keyframes.
+- `tests/refactor.test.js` — regression suite.
+- `.github/workflows/refactor-tests.yml` — automatic regression and syntax checks.
+- `PROJECT_HISTORY.md` — persistent handoff and architecture history.
 
-Version 1 and Version 2 must remain separate. Version 1 is completed/frozen; new gameplay evolution belongs to Version 2.
+Version 1 and Version 2 remain separate gameplay generations. Version 1 is completed/frozen except approved shared UI/engine maintenance; new gameplay evolution belongs to Version 2.
 
 ## Naming rules
 
@@ -26,153 +28,142 @@ Version = major design generation inside the same Type. Each Version has its own
 - Type 01 / Version 1: v0.1 -> ... -> v0.7 -> v1.0 FINAL.
 - Type 01 / Version 2: v0.1 -> v0.2 -> ... DEVELOPMENT.
 
-## Version 1 - completed baseline
+## Version 1 — completed baseline
 
-Version 1 v1.0 is frozen. It established the 4x4 board, hero merging, enemies/Bosses, HP/ATK combat, endless Boss progression, animation pipeline, scoring and Game Over statistics.
+Version 1 v1.0 established the 4x4 board, hero merging, enemies/Bosses, HP/ATK combat, endless Boss progression, animation pipeline, scoring and Game Over statistics.
 
-Version 1 used three fixed merge-trigger skills: Warrior every merge, Archer every 3 merges, Mage every 5 merges. These remain part of Version 1 history only and are explicitly removed from Version 2.
+Version 1 fixed skills:
+- Warrior attacks on every merge.
+- Archer attacks every 3 merges.
+- Mage attacks every 5 merges.
 
-Version 1 score baseline: valid move +1; merge adds resulting hero value; normal enemy +20; Boss +100; hero death subtracts hero value; score floor 0.
+Version 1 score baseline:
+- valid move +1;
+- merge adds resulting hero value;
+- normal enemy +20;
+- Boss +100;
+- hero death subtracts hero value;
+- score floor 0.
 
-### Version 1 post-final UI sync
+Approved post-final UI sync:
+- normal Shadow Assassins no longer show redundant `1 HP` text;
+- heroes use proportional HP bars plus compact `current / max HP` text;
+- Bosses use a contrasting HP bar plus ATK;
+- gameplay rules remain unchanged.
 
-Version 1 remains gameplay-frozen, but the approved Version 2 v0.2 health-display cleanup was synchronized back to the official v1.0 presentation as a UI-only change:
-- normal Shadow Assassins no longer show redundant `1 HP` text and display identity + ATK only;
-- heroes use a proportional HP bar plus compact `current / max HP` text;
-- Bosses use a contrasting proportional HP bar plus compact `current / max HP` text and ATK;
-- no Version 1 gameplay, scoring, spawning, skills, timing, damage, Boss progression or animation rules were changed by this UI sync.
+## Version 2 — development
 
-## Version 2 - development
+### v0.1 — Skill Pool Prototype
 
-### v0.1 - Skill Pool Prototype
+Version 2 replaced Version 1's fixed Warrior/Archer/Mage merge skills with a run-wide Skill Pool.
 
-Version 2 v0.1 replaced the fixed Warrior/Archer/Mage system with a run-wide Skill Pool.
-
-Core progression:
-- first new highest hero number 2 -> choose 1 of 3 unowned skills.
-- then first 4 -> choose 1 of 3.
-- then first 8 -> choose 1 of 3.
-- continue for higher records.
+Progression rule:
+- first new highest hero number 2 -> choose 1 of 3 unowned skills;
+- then first 4 -> choose 1 of 3;
+- then first 8 -> choose 1 of 3;
+- continue for later records;
 - recreating an already reached number does not grant another choice.
 
-Skills are global to the whole run, not attached to a hero and not divided into classes. They may trigger from movement, merge, hero damage, hero death, enemy death, Boss appearance, hero spawning, board state, score/record events and similar game events.
+Skills are global to the run, not attached to individual heroes/classes. The persistent `本局技能` strip shows every selected skill and can expose details.
 
-The persistent `本局技能` icon strip shows every selected skill; tapping an icon opens its effect description.
+Initial 27-skill pool includes: 疾行、風壓、餘勢、共鳴、融合再生、超載、反震、逆境、怒火、遺爆、遺志、血祭、靈魂收割、連殺、殺意、決戰準備、先制、堡壘、優質增援、新生、突變、孤軍、人海、危機感知、突破者、獵王、高風險投資.
 
-Version 2 does NOT provide:
-- Warrior attack on every merge.
-- Archer attack every 3 merges.
-- Mage attack every 5 merges.
-
-Initial Skill Pool examples: 疾行、風壓、餘勢、共鳴、融合再生、超載、反震、逆境、怒火、遺爆、遺志、血祭、靈魂收割、連殺、殺意、決戰準備、先制、堡壘、優質增援、新生、突變、孤軍、人海、危機感知、突破者、獵王、高風險投資.
-
-### v0.2 - Combat Readability + Run History
+### v0.2 — Combat Readability + Run History
 
 Status: CURRENT PLAYABLE DEVELOPMENT PROTOTYPE.
 
 Playable file: `rpg-v2-v0-2/index.html`.
 
-v0.2 preserves the v0.1 Skill Pool and new-high-number three-choice progression, then makes these changes:
+Main v0.2 changes:
+1. Enemy/Boss melee attack uses the early sword-slash visual.
+2. Attack visuals and floating HP numbers begin together and never extend the attack stage beyond 0.75 s.
+3. Game Over restores the detailed Version 1-style score/run history.
+4. Game Over adds `本局取得技能` for all selected Skill Pool abilities.
+5. Score/run tracking includes movement score, merge/record score, normal-enemy score, Boss score, hero-death penalty, turns, moves, merges, kills, Boss kills, hero deaths and highest hero number.
+6. Normal Shadow Assassins omit redundant 1 HP text.
+7. Heroes and Bosses use visual HP bars.
 
-1. Enemy melee attack animation returns to the early Version 1-style sword slash. When an enemy or Boss attacks a hero, the visible slash is played on the target tile instead of a generic attack icon.
-2. Enemy attack animation and floating `-HP` begin together. Attack visuals must not extend the attack phase beyond the 0.75-second HP-number window.
-3. Game Over restores the Version 1-style result history: large total score, score breakdown, run history, and actions.
-4. Game Over adds a new `本局取得技能` section containing the icons and names of every skill selected during the run.
-5. Score/run tracking includes movement score, merge/record score, normal-enemy score, Boss score, actual hero-death penalty, turns survived, moves, merges, total enemy kills, Boss kills, hero deaths and highest hero number.
-6. Normal Shadow Assassins no longer display redundant `1 HP` text because they always have one HP in the current rules. They display identity and ATK only.
-7. Heroes and Bosses use visual health bars. The bar length shows current HP as a proportion of maximum HP, with a compact `current / max` value beneath it. Hero bars use the hero tile presentation; Boss bars use a contrasting Boss-health treatment.
+### Formal animation sequence / Death Wave rule
 
-#### Formal animation sequence / Death Wave rule
-
-Version 2 uses an ordered visual event pipeline. Future combat and skills must not bypass this sequence.
-
-Normal player-action sequence:
-1. movement animation — about 0.25 s;
-2. merge animation — about 0.25 s;
-3. attack / skill animation and HP number animation start together — maximum visible stage 0.75 s;
+Normal action pipeline:
+1. movement — about 0.25 s;
+2. merge — about 0.25 s;
+3. attack/skill animation + HP number simultaneously — max 0.75 s;
 4. units reduced to 0 HP play death animation — about 0.25 s.
 
-If a death triggers another attack, use Death Waves:
-1. finish the current attack + HP-number stage;
-2. play the current wave's death animation;
-3. only after that death animation completes, evaluate and play death-trigger effects such as explosion / chain attack;
-4. the death-trigger attack animation and its HP-number animation start together and stay within the same maximum 0.75-second stage;
-5. if that attack kills other units, play the next death wave;
-6. only after that death wave completes may it trigger another attack wave;
-7. repeat until there are no new deaths or death-trigger attacks.
+Death-trigger chains use waves:
+`attack + HP -> death -> death-trigger attack + HP -> next death -> next death-trigger ...`
 
-Example:
-`attack + -HP -> enemy A death -> A death-trigger explosion + target -HP -> enemies B/C death -> B/C death-trigger attack + target -HP -> next death wave ...`
+A death-trigger attack can start only after the death animation that caused it has completed. Multiple units killed by the same effect may die simultaneously as one Death Wave. All damaging death-trigger visuals still share the same max 0.75 s attack/HP stage.
 
-Multiple units killed by the same attack may play their death animations simultaneously as one Death Wave. They do not need to die one-by-one.
+### v0.2 skill-animation direction correction — 2026-09-13
 
-Important: do NOT resolve all death-trigger attacks first and postpone all death animations until the end. Death is a visual/event boundary: a unit's death-trigger effect cannot begin until its own death animation has completed.
+Targeted Skill Pool attack visuals were corrected from an outward pop to an inward impact motion.
 
-All damaging attack visuals, including death-trigger explosions, are attack-stage visuals and therefore run concurrently with their corresponding HP damage numbers. No attack FX should make that stage longer than 0.75 s.
+Rule:
+- attacks aimed at a specific target tile must visually travel **from outside toward the target tile**;
+- they must not appear to originate from the target tile and fly outward;
+- `遺爆` is the reference case: the bomb should look like it is thrown into the affected enemy tile, not thrown out from inside that tile;
+- the same inward convention applies to other targeted Skill Pool attack icons unless a future ability explicitly requires a different source-to-target animation;
+- sword slash, arrow, magic-wave, board-wide status effects and other semantically different animations keep their own animation types.
 
-Current timing reference:
-- movement: 0.25 s.
-- merge: 0.25 s.
-- attack/skill + HP number: max 0.75 s.
-- enemy sword slash itself: about 0.36 s inside that 0.75 s window.
-- death: 0.25 s.
+Implementation:
+- shared `animAttackConverge` now moves targeted attack icons from outside the tile into the tile, with a small impact settle;
+- both the reusable `.animBurst` class and the legacy-compatible `.attackfx` class use this same shared animation;
+- the attack stage remains within the 0.75 s effect timing contract.
 
 ## Shared architecture refactor — 2026-09-13
 
-Before this refactor, Standard 1024, Version 1 and Version 2 each kept most CSS / input / helper / result UI code inside their own `index.html`. That made bug fixes and UI changes easy to duplicate or accidentally diverge.
+The project now follows a shared-infrastructure / version-specific-rules architecture.
 
-The project now uses these layers:
+### `shared/core.js`
 
-### Shared JavaScript — `shared/core.js`
+Centralizes:
+- animation timing contract (`MOVE`, `MERGE`, `EFFECT`, `DEATH`, `SPAWN`, `SLASH`);
+- array equality;
+- random selection helper;
+- empty-cell discovery;
+- HP percentage + health-bar markup;
+- keyboard/swipe input binding;
+- reusable Game Over/run-history renderer.
 
-Reusable code centralized here:
-- global animation timing contract (`MOVE`, `MERGE`, `EFFECT`, `DEATH`, `SPAWN`, `SLASH`);
-- array equality helper used by Standard 1024 movement checks;
-- deterministic-friendly random item selection helper;
-- board empty-cell discovery used by RPG versions;
-- HP percentage calculation and reusable hero/Boss health-bar markup;
-- shared keyboard + swipe direction binding;
-- reusable Game Over / run-history row and panel renderer.
+### `shared/rpg-ui.css`
 
-Reasons:
-- one timing definition prevents animations from silently drifting between versions;
-- one input handler prevents different swipe thresholds / key behavior from diverging accidentally;
-- one HP renderer keeps Version 1 and Version 2 health UI synchronized;
-- one result-history renderer makes future result-screen changes reusable instead of copied manually.
-
-### Shared RPG CSS — `shared/rpg-ui.css`
-
-Common RPG visual components centralized here:
+Centralizes common RPG presentation:
 - board / cells / pieces;
-- hero, enemy and Boss tile base presentation;
-- hero / Boss HP bars;
-- movement, merge, damage, slash, death and board-wide effect styling;
-- common score/result/history cards and action buttons.
+- hero, enemy and Boss tiles;
+- HP bars;
+- common movement / merge / death presentation;
+- result/history cards and actions.
 
-Version-specific CSS remains beside each version only for elements that are actually unique, such as Version 1 arrow / mage effects and Version 2 Skill Pool / modal UI.
+### Shared animation library
 
-### Thin page + game module split
+Attack/skill animations are not owned by a specific Version. They live under:
+- `shared/animations.js` — animation registry and callable API;
+- `shared/animations.css` — animation classes/keyframes.
 
-Each maintained playable page now separates structure, style and logic:
-- Standard 1024: `classic/index.html` + `classic/style.css` + `classic/game.js`.
-- Version 1 FINAL: `rpg-v1-0/index.html` + `rpg-v1-0/style.css` + `rpg-v1-0/game.js`.
-- Version 2 current: `rpg-v2-v0-2/index.html` + `rpg-v2-v0-2/style.css` + `rpg-v2-v0-2/game.js`.
+The library currently includes reusable animation types such as damage, heal, buff, slash, burst/targeted skill impact, arrow, magic-wave, board-wave, skill-tag and pulse.
 
-`index.html` files are now small page shells. Game rules stay in each version's own `game.js`; shared infrastructure stays under `shared/`.
+Design rule: whether V1 or V2 uses an animation is determined only by whether that version calls it. The animation implementation itself should not be duplicated inside a Version folder.
 
-Important boundary: reuse infrastructure, not gameplay rules. Version 1 remains fixed to its Warrior / Archer / Mage 1/3/5 system while Version 2 remains Skill Pool based.
+### Page/module split
 
-### Regression tests / CI
+Maintained playables separate page structure, style and rules:
+- Standard: `classic/index.html` + `classic/style.css` + `classic/game.js`;
+- V1: `rpg-v1-0/index.html` + `rpg-v1-0/style.css` + `rpg-v1-0/game.js`;
+- V2: `rpg-v2-v0-2/index.html` + `rpg-v2-v0-2/style.css` + `rpg-v2-v0-2/game.js`.
 
-`tests/refactor.test.js` contains more than 10 regression assertions covering shared helpers, HP UI, run-history rendering, module wiring, Version 1 fixed-skill preservation, Version 2 27-skill preservation and Death Wave ordering.
+Important boundary: reuse infrastructure and presentation primitives; do not merge V1 and V2 gameplay rules.
 
-`.github/workflows/refactor-tests.yml` runs the regression suite plus `node --check` syntax validation for shared core, Standard 1024, Version 1 and Version 2 on every push / pull request.
+## Regression tests / CI
 
-Future reusable UI or engine behavior should go into `shared/` only when all consuming versions actually share the same semantic rule. Version-specific gameplay must remain local to the version module.
+`tests/refactor.test.js` contains more than 20 regression assertions covering shared helpers, HP UI, history rendering, module wiring, V1 fixed-skill preservation, V2 27-skill preservation, Death Wave ordering and shared animation-direction rules.
+
+`.github/workflows/refactor-tests.yml` runs the suite and JavaScript syntax checks on every push / pull request.
 
 ## Version 2 future work
 
-Candidate work after v0.2 includes configurable board sizes such as 6x4, irregular boards, distinct Boss mechanics, behaviorally different enemies, Relics, Combo/Chain systems, Score/Run refinement and eventually Meta Progression.
+Candidate work after v0.2 includes configurable board sizes such as 6x4, irregular boards, distinct Boss mechanics, behaviorally different enemies, Relics, Combo/Chain systems, Score/Run refinement and Meta Progression.
 
 Version 2 design principle: new systems should support the central Type 01 question, "Which direction should I swipe next?"
 
@@ -183,14 +174,14 @@ When continuing development:
 2. Read root `index.html` to confirm hierarchy.
 3. Read the relevant Version page.
 4. Fetch the actual playable HTML plus its `game.js` / `style.css` before modifying code.
-5. Read `shared/core.js` and `shared/rpg-ui.css` before duplicating any helper, result UI, HP UI, input handling or animation timing.
+5. Read shared modules before duplicating helpers, HP UI, history UI, input handling or animations.
 6. Never reconstruct current game code from memory alone.
 7. Do not change unspecified gameplay rules, timing, spawning or values.
-8. Run `node tests/refactor.test.js` and syntax checks after meaningful shared-code changes.
-9. Every meaningful gameplay change, Version milestone, rule decision, architectural refactor or important bug fix must be synchronized into `PROJECT_HISTORY.md`.
+8. Run the regression suite and syntax checks after meaningful shared-code changes.
+9. Every meaningful gameplay change, Version milestone, architecture decision or important bug fix must be synchronized into this file.
 
 ## Current milestone
 
-- Type 01 / Version 1 / v1.0: FINAL / COMPLETED — gameplay frozen; approved visual HP-bar UI synchronized from Version 2 v0.2; implementation now consumes shared infrastructure.
-- Type 01 / Version 2 / v0.2: CURRENT PLAYABLE DEVELOPMENT PROTOTYPE — Skill Pool + sword-slash enemy attack + restored Game Over history + acquired-skill summary + Death Wave animation sequence + visual hero/Boss health bars; implementation now consumes shared infrastructure.
-- Standard 1024, Version 1 and Version 2 now share reusable core utilities instead of maintaining duplicate input / HP / result / timing helpers.
+- Type 01 / Version 1 / v1.0: FINAL / COMPLETED — gameplay frozen; approved shared UI/animation infrastructure may be reused without altering rules.
+- Type 01 / Version 2 / v0.2: CURRENT PLAYABLE DEVELOPMENT PROTOTYPE — Skill Pool + sword-slash enemy attack + restored Game Over history + acquired-skill summary + Death Wave sequencing + hero/Boss HP bars + corrected inward targeted-skill animation direction.
+- Standard, V1 and V2 now share reusable infrastructure instead of maintaining duplicate common behavior.
