@@ -56,6 +56,7 @@ Approved post-final UI/engine maintenance:
 - the old activity log strip was removed to reduce vertical UI space;
 - shared Game Info uses the mobile-first viewport overlay;
 - shared sword-slash visual is vertically centered in the tile;
+- shared targeted skill burst now grows from the tile center and fades out;
 - gameplay rules remain unchanged.
 
 ## Version 2 — development
@@ -103,23 +104,23 @@ Death-trigger chains use waves:
 
 A death-trigger attack can start only after the death animation that caused it has completed. Multiple units killed by the same effect may die simultaneously as one Death Wave. All damaging death-trigger visuals still share the same max 0.75 s attack/HP stage.
 
-### v0.2 skill-animation direction correction — 2026-09-13
+### v0.2 final animation refinements — 2026-09-13
 
-Targeted Skill Pool attack visuals use an inward impact convention:
-- attacks aimed at a specific target tile visually travel **from outside toward the target tile**;
-- they must not appear to originate from the target tile and fly outward;
-- `遺爆` is the reference case: the bomb looks thrown into the affected enemy tile;
-- sword slash, source-to-target arrow, magic-wave and board-wide status effects retain their own semantic animation types.
+- Enemy/Boss sword slash is positioned through the visual center of the target tile.
+- Player targeted skill burst icons no longer travel in from outside the tile. They appear at the tile center, scale up, and fade out.
+- Source-to-target arrow, magic-wave and board-wide status animations keep their own semantic motion.
+- Timing, damage resolution and Death Wave ordering are unchanged.
 
 ### v0.2 stabilization before v0.3 — 2026-09-13
 
-Five maintenance fixes were completed before beginning any v0.3 gameplay work:
+Six maintenance fixes were completed before beginning any v0.3 gameplay work:
 
-1. **Animation system repaired.** V2 had still been calling legacy local CSS class names (`attackfx`, `damagefx`, etc.) after the shared animation refactor, while those visuals had moved to the shared library. V2 now calls `RPGAnimations.createAnimator()` directly, the same reusable API used by V1. Damage/heal text visibly floats and fades; slash travels across the tile; targeted skill icons move from outside into the target and finish with an impact ring; arrows visibly travel source-to-target; magic/board waves use expanding gradient/ring motion.
+1. **Animation system repaired.** V2 had still been calling legacy local CSS class names (`attackfx`, `damagefx`, etc.) after the shared animation refactor, while those visuals had moved to the shared library. V2 now calls `RPGAnimations.createAnimator()` directly, the same reusable API used by V1. Damage/heal text visibly floats and fades; slash travels across the tile; arrows visibly travel source-to-target; magic/board waves use expanding gradient/ring motion.
 2. **Activity log removed.** The dedicated log strip and its writes were removed from V1 and V2 to reduce vertical UI length. Important persistent state remains visible through stats, skill icons, HP bars, animations and help.
 3. **Clickable stat explanations implemented.** Existing top statistic cards now use the shared `game-help.js` component. V1 provides explanations for SCORE, TURN, MERGES, BOSS and WAVE. V2 provides explanations for SCORE, TURN, MERGE and BEST HERO. The shared component supports click/tap, keyboard Enter/Space and Escape-to-close; each Version owns only its help-data text.
 4. **Mobile Game Info overlay fixed.** The shared statistic-help presentation is a true viewport overlay rather than participating in the page's flex layout. On phones the panel opens at the top of the screen, uses the available viewport width, respects safe-area insets, scrolls internally when needed, and keeps an obvious close control accessible. This is shared UI maintenance only; no V1 or V2 gameplay rule changed.
-5. **Sword-slash visual centered vertically.** The shared enemy/Boss melee slash was shifted downward within its tile so the visible strike crosses the visual center of the grid cell rather than appearing too high. Timing, damage, direction and gameplay behavior were unchanged.
+5. **Sword-slash visual centered vertically.** The shared enemy/Boss melee slash was moved farther down and reshaped so the visible strike crosses the center of the grid cell rather than appearing above it. Timing, damage, direction and gameplay behavior were unchanged.
+6. **Player targeted skill burst changed to center bloom.** Shared burst icons now originate at the target tile center, scale outward and fade away. This replaces the earlier outside-to-in travel convention for these player skill visuals while leaving arrow/magic/board effects unchanged.
 
 These are v0.2 stabilization/UI-engine changes, not Version 2 v0.3 gameplay changes.
 
@@ -153,7 +154,7 @@ Attack/skill animations are not owned by a specific Version. They live under:
 - `shared/animations.js` — animation registry and callable API;
 - `shared/animations.css` — reusable animation visuals/keyframes.
 
-The library includes reusable animation types such as damage, heal, buff, slash, burst/targeted skill impact, arrow, magic-wave, board-wave, skill-tag and pulse. The shared slash visual is positioned through `shared/animations.css`, so its centered placement is inherited by every Version that calls the shared slash animation.
+The library includes reusable animation types such as damage, heal, buff, slash, burst/targeted skill impact, arrow, magic-wave, board-wave, skill-tag and pulse. The shared slash visual is positioned through `shared/animations.css`, so its centered placement is inherited by every Version that calls the shared slash animation. Targeted burst effects use a center-bloom animation: icon appears at target center, scales up, then fades.
 
 Design rule: whether V1 or V2 uses an animation is determined only by whether that version calls it. The animation implementation itself is not duplicated inside a Version folder.
 
@@ -191,7 +192,7 @@ Before changing gameplay:
 - fetch the current `rpg-v2-v0-2/index.html`, `style.css`, `game.js`, and `help-data.js` from GitHub;
 - fetch `shared/core.js`, `shared/rpg-ui.css`, `shared/animations.js`, `shared/animations.css`, `shared/game-help.js`, and `shared/game-help.css` before duplicating or altering shared behavior;
 - preserve the v0.2 animation timing and Death Wave rules unless the user explicitly changes them;
-- preserve the repaired shared animation motion, centered slash placement, removed log strip, mobile-first clickable stat-help UI, HP-bar UI, Game Over history, and 27-skill Skill Pool unless explicitly changed;
+- preserve the repaired shared animation motion, centered slash placement, center-bloom targeted skill visuals, removed log strip, mobile-first clickable stat-help UI, HP-bar UI, Game Over history, and 27-skill Skill Pool unless explicitly changed;
 - Version 1 remains gameplay-frozen; only reusable shared-engine/UI maintenance may be synchronized back to V1;
 - create a new `rpg-v2-v0-3/` playable directory rather than overwriting the v0.2 archive once v0.3 implementation starts;
 - update `type-01-v2/index.html`, root milestone references if needed, regression tests/CI expectations, and this file whenever the v0.3 milestone changes.
@@ -214,6 +215,6 @@ When continuing development:
 ## Current milestone
 
 - Type 01 / Version 1 / v1.0: FINAL / COMPLETED — gameplay frozen; approved shared UI/animation/help infrastructure may be reused without altering rules; activity log removed.
-- Type 01 / Version 2 / v0.2: STABILIZED PLAYABLE BASELINE — Skill Pool + sword-slash enemy attack + restored Game Over history + acquired-skill summary + Death Wave sequencing + hero/Boss HP bars + repaired reusable motion animations + mobile-first clickable stat explanations + centered shared slash visual; activity log removed.
+- Type 01 / Version 2 / v0.2: STABILIZED PLAYABLE BASELINE — Skill Pool + centered sword-slash enemy attack + restored Game Over history + acquired-skill summary + Death Wave sequencing + hero/Boss HP bars + repaired reusable motion animations + center-bloom targeted skill visuals + mobile-first clickable stat explanations; activity log removed.
 - Standard, V1 and V2 share reusable infrastructure instead of maintaining duplicate common behavior.
 - Next work item: begin Version 2 v0.3 in a new `rpg-v2-v0-3/` directory from the stabilized v0.2 baseline; no v0.3 gameplay changes have been committed yet.
