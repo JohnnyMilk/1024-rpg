@@ -75,6 +75,30 @@ Version 2 v0.1 does NOT provide:
 
 The global merge counter remains useful for statistics and Skill Pool effects, but it no longer automatically fires those three Version 1 abilities.
 
+#### Animation sequence rule
+
+Version 2 keeps a strict ordered animation pipeline. This is a gameplay readability rule and should not be bypassed by future skills.
+
+For a player action, the visible sequence is:
+1. movement animation;
+2. merge animation;
+3. attack / skill-effect animation and HP damage numbers begin together;
+4. only after all damage/effect presentation is complete, units at 0 HP play the death animation.
+
+Skill-trigger chains caused by a lethal event are resolved into the effect/damage stage before the final death presentation whenever possible, so damage numbers do not appear after the unit has already visually disappeared.
+
+The same principle applies to enemy actions: enemy movement first, then attacks/effects plus HP numbers, then death.
+
+All Skill Pool abilities must have visible feedback when they actually trigger. Version 2 v0.1 therefore uses:
+- target attack/effect FX plus floating `-HP` for damaging skills;
+- floating `+HP` for healing skills;
+- buff/status text and owned-skill icon pulse for passive mitigation or damage boosts;
+- board-wide flash/tag for global, score, death-trigger, Boss or state-based effects;
+- spawn pulse for spawn-changing skills;
+- standard death fade only after the effect/damage phase.
+
+Animation timing reference in v0.1: movement 0.25 s, merge 0.25 s, skill/effect and HP-number stage 0.75 s, death 0.25 s.
+
 #### Initial Skill Pool
 
 The prototype contains skills based on these trigger families: movement, merge, hero damage, hero death, enemy death, Boss appearance, hero spawning, board state and Score/record events. The trigger-family labels are primarily an internal design taxonomy; the player receives a mixed three-choice pool rather than choosing a class.
@@ -103,4 +127,4 @@ When continuing development:
 ## Current milestone
 
 - Type 01 / Version 1 / v1.0: FINAL / COMPLETED.
-- Type 01 / Version 2 / v0.1: PLAYABLE DEVELOPMENT PROTOTYPE — Skill Pool + new-high-number three-choice progression.
+- Type 01 / Version 2 / v0.1: PLAYABLE DEVELOPMENT PROTOTYPE — Skill Pool + new-high-number three-choice progression + ordered skill animation pipeline.
