@@ -9,6 +9,10 @@
 - `type-01-v2/index.html` — Type 01 Version 2 dedicated page and development log.
 - `rpg-v2-v0-1/index.html` — playable Version 2 v0.1 archive.
 - `rpg-v2-v0-2/index.html` — current playable Version 2 v0.2 prototype.
+- `shared/core.js` — cross-version reusable JavaScript helpers and UI render functions.
+- `shared/rpg-ui.css` — shared RPG board / HP / animation / result UI styles.
+- `tests/refactor.test.js` — shared refactor regression suite.
+- `.github/workflows/refactor-tests.yml` — automatic Node regression + syntax checks on every push.
 - `PROJECT_HISTORY.md` — persistent handoff.
 
 Version 1 and Version 2 must remain separate. Version 1 is completed/frozen; new gameplay evolution belongs to Version 2.
@@ -113,6 +117,59 @@ Current timing reference:
 - enemy sword slash itself: about 0.36 s inside that 0.75 s window.
 - death: 0.25 s.
 
+## Shared architecture refactor — 2026-09-13
+
+Before this refactor, Standard 1024, Version 1 and Version 2 each kept most CSS / input / helper / result UI code inside their own `index.html`. That made bug fixes and UI changes easy to duplicate or accidentally diverge.
+
+The project now uses these layers:
+
+### Shared JavaScript — `shared/core.js`
+
+Reusable code centralized here:
+- global animation timing contract (`MOVE`, `MERGE`, `EFFECT`, `DEATH`, `SPAWN`, `SLASH`);
+- array equality helper used by Standard 1024 movement checks;
+- deterministic-friendly random item selection helper;
+- board empty-cell discovery used by RPG versions;
+- HP percentage calculation and reusable hero/Boss health-bar markup;
+- shared keyboard + swipe direction binding;
+- reusable Game Over / run-history row and panel renderer.
+
+Reasons:
+- one timing definition prevents animations from silently drifting between versions;
+- one input handler prevents different swipe thresholds / key behavior from diverging accidentally;
+- one HP renderer keeps Version 1 and Version 2 health UI synchronized;
+- one result-history renderer makes future result-screen changes reusable instead of copied manually.
+
+### Shared RPG CSS — `shared/rpg-ui.css`
+
+Common RPG visual components centralized here:
+- board / cells / pieces;
+- hero, enemy and Boss tile base presentation;
+- hero / Boss HP bars;
+- movement, merge, damage, slash, death and board-wide effect styling;
+- common score/result/history cards and action buttons.
+
+Version-specific CSS remains beside each version only for elements that are actually unique, such as Version 1 arrow / mage effects and Version 2 Skill Pool / modal UI.
+
+### Thin page + game module split
+
+Each maintained playable page now separates structure, style and logic:
+- Standard 1024: `classic/index.html` + `classic/style.css` + `classic/game.js`.
+- Version 1 FINAL: `rpg-v1-0/index.html` + `rpg-v1-0/style.css` + `rpg-v1-0/game.js`.
+- Version 2 current: `rpg-v2-v0-2/index.html` + `rpg-v2-v0-2/style.css` + `rpg-v2-v0-2/game.js`.
+
+`index.html` files are now small page shells. Game rules stay in each version's own `game.js`; shared infrastructure stays under `shared/`.
+
+Important boundary: reuse infrastructure, not gameplay rules. Version 1 remains fixed to its Warrior / Archer / Mage 1/3/5 system while Version 2 remains Skill Pool based.
+
+### Regression tests / CI
+
+`tests/refactor.test.js` contains more than 10 regression assertions covering shared helpers, HP UI, run-history rendering, module wiring, Version 1 fixed-skill preservation, Version 2 27-skill preservation and Death Wave ordering.
+
+`.github/workflows/refactor-tests.yml` runs the regression suite plus `node --check` syntax validation for shared core, Standard 1024, Version 1 and Version 2 on every push / pull request.
+
+Future reusable UI or engine behavior should go into `shared/` only when all consuming versions actually share the same semantic rule. Version-specific gameplay must remain local to the version module.
+
 ## Version 2 future work
 
 Candidate work after v0.2 includes configurable board sizes such as 6x4, irregular boards, distinct Boss mechanics, behaviorally different enemies, Relics, Combo/Chain systems, Score/Run refinement and eventually Meta Progression.
@@ -125,12 +182,15 @@ When continuing development:
 1. Read `PROJECT_HISTORY.md` first.
 2. Read root `index.html` to confirm hierarchy.
 3. Read the relevant Version page.
-4. Fetch the actual playable HTML before modifying code.
-5. Never reconstruct current game code from memory alone.
-6. Do not change unspecified gameplay rules, timing, spawning or values.
-7. Every meaningful gameplay change, Version milestone, rule decision or important bug fix must be synchronized into `PROJECT_HISTORY.md`.
+4. Fetch the actual playable HTML plus its `game.js` / `style.css` before modifying code.
+5. Read `shared/core.js` and `shared/rpg-ui.css` before duplicating any helper, result UI, HP UI, input handling or animation timing.
+6. Never reconstruct current game code from memory alone.
+7. Do not change unspecified gameplay rules, timing, spawning or values.
+8. Run `node tests/refactor.test.js` and syntax checks after meaningful shared-code changes.
+9. Every meaningful gameplay change, Version milestone, rule decision, architectural refactor or important bug fix must be synchronized into `PROJECT_HISTORY.md`.
 
 ## Current milestone
 
-- Type 01 / Version 1 / v1.0: FINAL / COMPLETED — gameplay frozen; approved visual HP-bar UI synchronized from Version 2 v0.2.
-- Type 01 / Version 2 / v0.2: CURRENT PLAYABLE DEVELOPMENT PROTOTYPE — Skill Pool + sword-slash enemy attack + restored Game Over history + acquired-skill summary + Death Wave animation sequence + visual hero/Boss health bars.
+- Type 01 / Version 1 / v1.0: FINAL / COMPLETED — gameplay frozen; approved visual HP-bar UI synchronized from Version 2 v0.2; implementation now consumes shared infrastructure.
+- Type 01 / Version 2 / v0.2: CURRENT PLAYABLE DEVELOPMENT PROTOTYPE — Skill Pool + sword-slash enemy attack + restored Game Over history + acquired-skill summary + Death Wave animation sequence + visual hero/Boss health bars; implementation now consumes shared infrastructure.
+- Standard 1024, Version 1 and Version 2 now share reusable core utilities instead of maintaining duplicate input / HP / result / timing helpers.
