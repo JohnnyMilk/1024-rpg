@@ -7,7 +7,8 @@
 - `type-01/index.html` — Type 01 Version 1 dedicated page; completed history.
 - `rpg-v1-0/index.html` — Version 1 v1.0 FINAL.
 - `type-01-v2/index.html` — Type 01 Version 2 dedicated page and development log.
-- `rpg-v2-v0-1/index.html` — playable Version 2 v0.1 prototype.
+- `rpg-v2-v0-1/index.html` — playable Version 2 v0.1 archive.
+- `rpg-v2-v0-2/index.html` — current playable Version 2 v0.2 prototype.
 - `PROJECT_HISTORY.md` — persistent handoff.
 
 Version 1 and Version 2 must remain separate. Version 1 is completed/frozen; new gameplay evolution belongs to Version 2.
@@ -19,13 +20,13 @@ Type = core gameplay. Type 01 remains four-direction 1024-style sliding, same-Ti
 Version = major design generation inside the same Type. Each Version has its own v0.x development sequence and can later reach its own v1.0 FINAL.
 
 - Type 01 / Version 1: v0.1 -> ... -> v0.7 -> v1.0 FINAL.
-- Type 01 / Version 2: v0.1 DEVELOPMENT onward.
+- Type 01 / Version 2: v0.1 -> v0.2 -> ... DEVELOPMENT.
 
 ## Version 1 - completed baseline
 
 Version 1 v1.0 is frozen. It established the 4x4 board, hero merging, enemies/Bosses, HP/ATK combat, endless Boss progression, animation pipeline, scoring and Game Over statistics.
 
-Version 1 also used three fixed merge-trigger skills: Warrior every merge, Archer every 3 merges, Mage every 5 merges. These remain part of Version 1 history only and are explicitly removed from Version 2 v0.1.
+Version 1 used three fixed merge-trigger skills: Warrior every merge, Archer every 3 merges, Mage every 5 merges. These remain part of Version 1 history only and are explicitly removed from Version 2.
 
 Version 1 score baseline: valid move +1; merge adds resulting hero value; normal enemy +20; Boss +100; hero death subtracts hero value; score floor 0.
 
@@ -33,83 +34,78 @@ Version 1 score baseline: valid move +1; merge adds resulting hero value; normal
 
 ### v0.1 - Skill Pool Prototype
 
-Status: PLAYABLE DEVELOPMENT PROTOTYPE.
+Version 2 v0.1 replaced the fixed Warrior/Archer/Mage system with a run-wide Skill Pool.
 
-Playable file: `rpg-v2-v0-1/index.html`.
+Core progression:
+- first new highest hero number 2 -> choose 1 of 3 unowned skills.
+- then first 4 -> choose 1 of 3.
+- then first 8 -> choose 1 of 3.
+- continue for higher records.
+- recreating an already reached number does not grant another choice.
 
-Version 2 v0.1 keeps the Version 1 board/combat foundation but replaces its fixed Warrior/Archer/Mage merge skills with a run-wide Skill Pool system.
+Skills are global to the whole run, not attached to a hero and not divided into classes. They may trigger from movement, merge, hero damage, hero death, enemy death, Boss appearance, hero spawning, board state, score/record events and similar game events.
 
-#### Core progression rule
+The persistent `本局技能` icon strip shows every selected skill; tapping an icon opens its effect description.
 
-The hero number is the Run level-up milestone.
-
-When a merge creates a hero number that is greater than the highest hero number previously achieved in the current run, the game pauses and presents three randomly selected unowned skills. The player chooses one.
-
-Examples:
-- first 2 -> choose 1 of 3 skills.
-- first 4 -> choose 1 of 3 skills.
-- first 8 -> choose 1 of 3 skills.
-- first 16 -> choose 1 of 3 skills.
-- continue for higher new records.
-
-Recreating a number already reached earlier in the run does NOT grant another choice, even if the previous high-value hero died.
-
-#### Skill ownership
-
-Skills do not belong to individual heroes and do not use Warrior/Archer/Mage classes. Every chosen skill becomes a global ability for the remainder of that run.
-
-Skills may trigger from many game events, including valid movement, merge, hero damage, hero death, enemy death, Boss appearance, hero spawning, board state and scoring/record events.
-
-#### Skill UI
-
-Version 2 v0.1 adds a persistent `本局技能` icon strip above the board.
-
-Every chosen skill adds one icon. Tapping an owned skill icon opens a detail panel showing the skill name and effect. This strip is intended to let the player understand the current Run Build without placing extra information on individual hero tiles.
-
-#### Removed Version 1 skills
-
-Version 2 v0.1 does NOT provide:
+Version 2 does NOT provide:
 - Warrior attack on every merge.
 - Archer attack every 3 merges.
 - Mage attack every 5 merges.
 
-The global merge counter remains useful for statistics and Skill Pool effects, but it no longer automatically fires those three Version 1 abilities.
+Initial Skill Pool examples: 疾行、風壓、餘勢、共鳴、融合再生、超載、反震、逆境、怒火、遺爆、遺志、血祭、靈魂收割、連殺、殺意、決戰準備、先制、堡壘、優質增援、新生、突變、孤軍、人海、危機感知、突破者、獵王、高風險投資.
 
-#### Animation sequence rule
+### v0.2 - Combat Readability + Run History
 
-Version 2 keeps a strict ordered animation pipeline. This is a gameplay readability rule and should not be bypassed by future skills.
+Status: CURRENT PLAYABLE DEVELOPMENT PROTOTYPE.
 
-For a player action, the visible sequence is:
-1. movement animation;
-2. merge animation;
-3. attack / skill-effect animation and HP damage numbers begin together;
-4. only after all damage/effect presentation is complete, units at 0 HP play the death animation.
+Playable file: `rpg-v2-v0-2/index.html`.
 
-Skill-trigger chains caused by a lethal event are resolved into the effect/damage stage before the final death presentation whenever possible, so damage numbers do not appear after the unit has already visually disappeared.
+v0.2 preserves the v0.1 Skill Pool and new-high-number three-choice progression, then makes these changes:
 
-The same principle applies to enemy actions: enemy movement first, then attacks/effects plus HP numbers, then death.
+1. Enemy melee attack animation returns to the early Version 1-style sword slash. When an enemy or Boss attacks a hero, the visible slash is played on the target tile instead of a generic attack icon.
+2. Enemy attack animation and floating `-HP` begin together. Attack visuals must not extend the attack phase beyond the 0.75-second HP-number window.
+3. Game Over restores the Version 1-style result history: large total score, score breakdown, run history, and actions.
+4. Game Over adds a new `本局取得技能` section containing the icons and names of every skill selected during the run.
+5. Score/run tracking includes movement score, merge/record score, normal-enemy score, Boss score, actual hero-death penalty, turns survived, moves, merges, total enemy kills, Boss kills, hero deaths and highest hero number.
 
-All Skill Pool abilities must have visible feedback when they actually trigger. Version 2 v0.1 therefore uses:
-- target attack/effect FX plus floating `-HP` for damaging skills;
-- floating `+HP` for healing skills;
-- buff/status text and owned-skill icon pulse for passive mitigation or damage boosts;
-- board-wide flash/tag for global, score, death-trigger, Boss or state-based effects;
-- spawn pulse for spawn-changing skills;
-- standard death fade only after the effect/damage phase.
+#### Formal animation sequence / Death Wave rule
 
-Animation timing reference in v0.1: movement 0.25 s, merge 0.25 s, skill/effect and HP-number stage 0.75 s, death 0.25 s.
+Version 2 uses an ordered visual event pipeline. Future combat and skills must not bypass this sequence.
 
-#### Initial Skill Pool
+Normal player-action sequence:
+1. movement animation — about 0.25 s;
+2. merge animation — about 0.25 s;
+3. attack / skill animation and HP number animation start together — maximum visible stage 0.75 s;
+4. units reduced to 0 HP play death animation — about 0.25 s.
 
-The prototype contains skills based on these trigger families: movement, merge, hero damage, hero death, enemy death, Boss appearance, hero spawning, board state and Score/record events. The trigger-family labels are primarily an internal design taxonomy; the player receives a mixed three-choice pool rather than choosing a class.
+If a death triggers another attack, use Death Waves:
+1. finish the current attack + HP-number stage;
+2. play the current wave's death animation;
+3. only after that death animation completes, evaluate and play death-trigger effects such as explosion / chain attack;
+4. the death-trigger attack animation and its HP-number animation start together and stay within the same maximum 0.75-second stage;
+5. if that attack kills other units, play the next death wave;
+6. only after that death wave completes may it trigger another attack wave;
+7. repeat until there are no new deaths or death-trigger attacks.
 
-Initial examples include 疾行、風壓、餘勢、共鳴、融合再生、超載、反震、逆境、怒火、遺爆、遺志、血祭、靈魂收割、連殺、殺意、決戰準備、先制、堡壘、優質增援、新生、突變、孤軍、人海、危機感知、突破者、獵王、高風險投資.
+Example:
+`attack + -HP -> enemy A death -> A death-trigger explosion + target -HP -> enemies B/C death -> B/C death-trigger attack + target -HP -> next death wave ...`
 
-Numbers/effects in the v0.1 Skill Pool are prototype balance values and may be adjusted after playtesting without changing the fundamental Skill Pool rule.
+Multiple units killed by the same attack may play their death animations simultaneously as one Death Wave. They do not need to die one-by-one.
+
+Important: do NOT resolve all death-trigger attacks first and postpone all death animations until the end. Death is a visual/event boundary: a unit's death-trigger effect cannot begin until its own death animation has completed.
+
+All damaging attack visuals, including death-trigger explosions, are attack-stage visuals and therefore run concurrently with their corresponding HP damage numbers. No attack FX should make that stage longer than 0.75 s.
+
+Current timing reference:
+- movement: 0.25 s.
+- merge: 0.25 s.
+- attack/skill + HP number: max 0.75 s.
+- enemy sword slash itself: about 0.36 s inside that 0.75 s window.
+- death: 0.25 s.
 
 ## Version 2 future work
 
-Candidate work after v0.1 includes configurable board sizes such as 6x4, irregular boards, distinct Boss mechanics, behaviorally different enemies, Relics, Combo/Chain systems, Score/Run refinement and eventually Meta Progression.
+Candidate work after v0.2 includes configurable board sizes such as 6x4, irregular boards, distinct Boss mechanics, behaviorally different enemies, Relics, Combo/Chain systems, Score/Run refinement and eventually Meta Progression.
 
 Version 2 design principle: new systems should support the central Type 01 question, "Which direction should I swipe next?"
 
@@ -127,4 +123,4 @@ When continuing development:
 ## Current milestone
 
 - Type 01 / Version 1 / v1.0: FINAL / COMPLETED.
-- Type 01 / Version 2 / v0.1: PLAYABLE DEVELOPMENT PROTOTYPE — Skill Pool + new-high-number three-choice progression + ordered skill animation pipeline.
+- Type 01 / Version 2 / v0.2: CURRENT PLAYABLE DEVELOPMENT PROTOTYPE — Skill Pool + sword-slash enemy attack + restored Game Over history + acquired-skill summary + Death Wave animation sequence.
