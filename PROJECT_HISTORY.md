@@ -2,154 +2,105 @@
 
 ## Site hierarchy
 
-The root `index.html` is the project-level entrance. It explains the difference between Type and Version, then links to each major Version page inside the current Type.
-
-Current structure:
-
-- `index.html` — project index; explains Type vs Version and shows Version 1 / Version 2 entrances.
+- `index.html` — project entrance; Type / Version explanation and Version entrances.
 - `classic/index.html` — Standard 1024 baseline.
-- `type-01/index.html` — Type 01 Version 1 dedicated page; completed Version 1 release and development log.
-- `rpg-v1-0/index.html` — playable Version 1 v1.0 FINAL release.
-- `type-01-v2/index.html` — Type 01 Version 2 dedicated page; design direction and development log.
-- `PROJECT_HISTORY.md` — persistent project memory and cross-conversation handoff.
+- `type-01/index.html` — Type 01 Version 1 dedicated page; completed history.
+- `rpg-v1-0/index.html` — Version 1 v1.0 FINAL.
+- `type-01-v2/index.html` — Type 01 Version 2 dedicated page and development log.
+- `rpg-v2-v0-1/index.html` — playable Version 2 v0.1 prototype.
+- `PROJECT_HISTORY.md` — persistent handoff.
 
-Important: do not put Version 2 planning content into the Version 1 page. Version 1 is closed/completed. Version 2 has its own dedicated page.
+Version 1 and Version 2 must remain separate. Version 1 is completed/frozen; new gameplay evolution belongs to Version 2.
 
 ## Naming rules
 
-### Type = core gameplay
+Type = core gameplay. Type 01 remains four-direction 1024-style sliding, same-Tier merging, and heroes/enemies sharing the board. Board-size or shape experiments may remain Type 01 if that core interaction remains.
 
-Create a new Type only when the main interaction, board rules, or combat structure fundamentally changes.
-
-Type 01 core identity:
-- 1024-style four-direction swipe.
-- hero movement and same-Tier merge.
-- enemies/Bosses share the same board with heroes.
-- RPG combat is driven by board interaction and merges.
-
-Changing board size or board shape alone does not automatically create a new Type. A 6x4 board or irregular board can remain Type 01 if the swipe/merge/shared-board combat core remains intact.
-
-### Version = major generation inside the same Type
-
-A Version represents a major design generation within one Type. Each Version may have its own internal development history starting from v0.1 and ending at v1.0 when finalized.
-
-Current model:
+Version = major design generation inside the same Type. Each Version has its own v0.x development sequence and can later reach its own v1.0 FINAL.
 
 - Type 01 / Version 1: v0.1 -> ... -> v0.7 -> v1.0 FINAL.
-- Type 01 / Version 2: starts at v0.1 DEVELOPMENT and evolves independently until its own future v1.0 FINAL.
+- Type 01 / Version 2: v0.1 DEVELOPMENT onward.
 
-## Type 01 Version 1 - completed
+## Version 1 - completed baseline
 
-Status: v1.0 FINAL.
+Version 1 v1.0 is frozen. It established the 4x4 board, hero merging, enemies/Bosses, HP/ATK combat, endless Boss progression, animation pipeline, scoring and Game Over statistics.
 
-Version 1 established the first complete Board Party Combat ruleset:
-- 4x4 board.
-- same-Tier hero merging.
-- enemies and Bosses live directly on the board.
-- merge-driven Warrior / Archer / Mage skills.
-- HP / ATK combat.
-- endless Boss progression.
-- complete animation pipeline.
-- scoring system.
-- Chinese Game Over history.
-- skill-kill statistics.
+Version 1 also used three fixed merge-trigger skills: Warrior every merge, Archer every 3 merges, Mage every 5 merges. These remain part of Version 1 history only and are explicitly removed from Version 2 v0.1.
 
-### Version 1 development history
+Version 1 score baseline: valid move +1; merge adds resulting hero value; normal enemy +20; Boss +100; hero death subtracts hero value; score floor 0.
 
-- v0.1 Merge Combat: first 1024 x RPG prototype; merge triggers attacks.
-- v0.2 Movement Combat: movement participates in combat; Warrior, Archer, Mage and turn-20 Boss concept.
-- v0.3 Pressure Spawn: enemy spawned on every valid move to test board pressure.
-- v0.4 Balanced Spawn: enemy spawn changed to every 2 valid turns; skills use global merge count.
-- v0.5 HIT Count Combat: durability and damage relationships revised.
-- v0.6 Unified Hero: same-Tier hero merge, 1/3/5 merge triggers, plus collision damage.
-- v0.7 Endless Boss: move -> merge -> attack/damage -> death pipeline, shadow enemies, Boss cycle and HP/ATK rebalance.
-- v1.0 Official Release: formal score, Game Over history, skill-kill statistics and mobile result layout. Version 1 finalized here.
+## Version 2 - development
 
-Version 1 should now be treated as a preserved baseline. New gameplay evolution belongs to Version 2 unless fixing a clear defect in the preserved Version 1 release is explicitly requested.
+### v0.1 - Skill Pool Prototype
 
-## Version 1 v1.0 reference rules
+Status: PLAYABLE DEVELOPMENT PROTOTYPE.
 
-Hero display values: 1=T2=2 HP, 2=T4=4 HP, 4=T8=8 HP, 8=T16=16 HP, continuing by doubling. Merged HP equals the sum of source remaining HP capped at the new maximum.
+Playable file: `rpg-v2-v0-1/index.html`.
 
-Each valid turn adds 1 hero. Every 2 valid turns adds 1 normal enemy. Boss interval is 20 turns. Boss defeat does not end the run. Game Over occurs on party wipe or when no direction can produce a valid action.
+Version 2 v0.1 keeps the Version 1 board/combat foundation but replaces its fixed Warrior/Archer/Mage merge skills with a run-wide Skill Pool system.
 
-When a hero swipes into an enemy, the hero stops before it, does not push it, does not directly damage it by collision, the move still counts as valid, and the hero takes that enemy's current ATK damage.
+#### Core progression rule
 
-Enemy phase: if an enemy begins adjacent to a hero, it attacks one adjacent hero and does not move. Otherwise it moves one cell toward the nearest hero. An enemy that moved does not attack in the same action.
+The hero number is the Run level-up milestone.
 
-Normal enemy: Shadow Assassin, max HP always 1. Spawned enemies retain their spawn-stage ATK.
+When a merge creates a hero number that is greater than the highest hero number previously achieved in the current run, the game pauses and presents three randomly selected unowned skills. The player chooses one.
 
-Boss cycle: Shadow Blade -> Night Lord -> Eye of the Abyss -> Shadow of Death -> Shadow King. Later cycles use II, III, and so on.
+Examples:
+- first 2 -> choose 1 of 3 skills.
+- first 4 -> choose 1 of 3 skills.
+- first 8 -> choose 1 of 3 skills.
+- first 16 -> choose 1 of 3 skills.
+- continue for higher new records.
 
-Boss HP: 10, 15, 20, 25, 30, 35...
+Recreating a number already reached earlier in the run does NOT grant another choice, even if the previous high-value hero died.
 
-Enemy/Boss ATK: `ceil(Stage / 2)` = 1, 1, 2, 2, 3, 3...
+#### Skill ownership
 
-Skills use global mergeCount:
-- Warrior: every merge; attacks orthogonal adjacent enemies.
-- Archer: every 3 merges; attacks one random enemy.
-- Mage: every 5 merges; attacks all enemies.
-- Triggers may overlap.
-- Each skill hit deals 1 HP.
+Skills do not belong to individual heroes and do not use Warrior/Archer/Mage classes. Every chosen skill becomes a global ability for the remainder of that run.
 
-Score:
-- valid move +1.
-- merge adds resulting hero display value.
-- normal enemy kill +20.
-- Boss kill +100.
-- hero death subtracts hero display value.
-- score floor = 0.
+Skills may trigger from many game events, including valid movement, merge, hero damage, hero death, enemy death, Boss appearance, hero spawning, board state and scoring/record events.
 
-Skill kills are assigned to the final lethal skill. Total enemies killed includes Bosses, so:
+#### Skill UI
 
-Warrior kills + Archer kills + Mage kills = total enemies killed.
+Version 2 v0.1 adds a persistent `本局技能` icon strip above the board.
 
-Animation reference:
-- move 0.25 s.
-- merge 0.25 s.
-- Warrior 0.36 s.
-- Archer 0.42 s.
-- Mage 0.62 s.
-- damage number 0.75 s.
-- death 0.25 s.
+Every chosen skill adds one icon. Tapping an owned skill icon opens a detail panel showing the skill name and effect. This strip is intended to let the player understand the current Run Build without placing extra information on individual hero tiles.
 
-## Type 01 Version 2 - development
+#### Removed Version 1 skills
 
-Status: v0.1 DEVELOPMENT / PLANNING.
+Version 2 v0.1 does NOT provide:
+- Warrior attack on every merge.
+- Archer attack every 3 merges.
+- Mage attack every 5 merges.
 
-Version 2 starts from the completed Version 1 design foundation, but it is not finalized. Its first state is therefore v0.1.
+The global merge counter remains useful for statistics and Skill Pool effects, but it no longer automatically fires those three Version 1 abilities.
 
-Current candidate directions:
+#### Initial Skill Pool
 
-1. Board size variation — expand beyond fixed 4x4, including a taller 6x4 board.
-2. Irregular board shapes — missing cells, blocked cells, or shaped maps while retaining four-direction swipe behavior.
-3. Hero-number abilities — higher merged hero values may gain meaningful abilities beyond HP.
-4. Skill Builds — Boss rewards can modify Warrior, Archer or Mage skills and create different run builds.
-5. Boss Mechanics — Bosses should influence board decisions, not merely gain HP/ATK.
-6. Relics — strategic run modifiers with meaningful benefits, tradeoffs, or build interactions.
-7. Combo / Chain — reward multiple merges or overlapping skill chains created by one swipe.
-8. Enemy Types — add a small number of behaviorally distinct enemies that change board decisions.
-9. Meta Progression — consider persistent unlocks only after the single-run systems prove fun.
+The prototype contains skills based on these trigger families: movement, merge, hero damage, hero death, enemy death, Boss appearance, hero spawning, board state and Score/record events. The trigger-family labels are primarily an internal design taxonomy; the player receives a mixed three-choice pool rather than choosing a class.
 
-Version 2 design principle: new systems should support the central Type 01 question: "Which direction should I swipe next?"
+Initial examples include 疾行、風壓、餘勢、共鳴、融合再生、超載、反震、逆境、怒火、遺爆、遺志、血祭、靈魂收割、連殺、殺意、決戰準備、先制、堡壘、優質增援、新生、突變、孤軍、人海、危機感知、突破者、獵王、高風險投資.
 
-### Version 2 development history
+Numbers/effects in the v0.1 Skill Pool are prototype balance values and may be adjusted after playtesting without changing the fundamental Skill Pool rule.
 
-- v0.1 Planning: dedicated Version 2 page created. Version 1 is preserved as completed; Version 2 records candidate directions separately. No candidate feature is considered final yet.
+## Version 2 future work
+
+Candidate work after v0.1 includes configurable board sizes such as 6x4, irregular boards, distinct Boss mechanics, behaviorally different enemies, Relics, Combo/Chain systems, Score/Run refinement and eventually Meta Progression.
+
+Version 2 design principle: new systems should support the central Type 01 question, "Which direction should I swipe next?"
 
 ## Cross-conversation handoff rules
 
-When continuing development in a new ChatGPT conversation:
-
+When continuing development:
 1. Read `PROJECT_HISTORY.md` first.
-2. Read root `index.html` to confirm the current site hierarchy.
-3. Read the relevant Version page (`type-01/` for Version 1, `type-01-v2/` for Version 2).
-4. Fetch the actual playable/development HTML before modifying code.
-5. Never reconstruct the game only from chat memory.
-6. Do not change unspecified gameplay rules, timing, spawning, or values.
-7. Every meaningful gameplay change, Version milestone, rule decision, or important bug fix must be synchronized into `PROJECT_HISTORY.md`.
+2. Read root `index.html` to confirm hierarchy.
+3. Read the relevant Version page.
+4. Fetch the actual playable HTML before modifying code.
+5. Never reconstruct current game code from memory alone.
+6. Do not change unspecified gameplay rules, timing, spawning or values.
+7. Every meaningful gameplay change, Version milestone, rule decision or important bug fix must be synchronized into `PROJECT_HISTORY.md`.
 
 ## Current milestone
 
 - Type 01 / Version 1 / v1.0: FINAL / COMPLETED.
-- Type 01 / Version 2 / v0.1: DEVELOPMENT / PLANNING.
+- Type 01 / Version 2 / v0.1: PLAYABLE DEVELOPMENT PROTOTYPE — Skill Pool + new-high-number three-choice progression.
