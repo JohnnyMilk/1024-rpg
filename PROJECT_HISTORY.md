@@ -67,6 +67,8 @@ v0.2 preserves the v0.1 Skill Pool and new-high-number three-choice progression,
 3. Game Over restores the Version 1-style result history: large total score, score breakdown, run history, and actions.
 4. Game Over adds a new `本局取得技能` section containing the icons and names of every skill selected during the run.
 5. Score/run tracking includes movement score, merge/record score, normal-enemy score, Boss score, actual hero-death penalty, turns survived, moves, merges, total enemy kills, Boss kills, hero deaths and highest hero number.
+6. Normal Shadow Assassins no longer display redundant `1 HP` text because they always have one HP in the current rules. They display identity and ATK only.
+7. Heroes and Bosses use visual health bars. The bar length shows current HP as a proportion of maximum HP, with a compact `current / max` value beneath it. Hero bars use the hero tile presentation; Boss bars use a contrasting Boss-health treatment.
 
 #### Formal animation sequence / Death Wave rule
 
@@ -123,4 +125,4 @@ When continuing development:
 ## Current milestone
 
 - Type 01 / Version 1 / v1.0: FINAL / COMPLETED.
-- Type 01 / Version 2 / v0.2: CURRENT PLAYABLE DEVELOPMENT PROTOTYPE — Skill Pool + sword-slash enemy attack + restored Game Over history + acquired-skill summary + Death Wave animation sequence.
+- Type 01 / Version 2 / v0.2: CURRENT PLAYABLE DEVELOPMENT PROTOTYPE — Skill Pool + sword-slash enemy attack + restored Game Over history + acquired-skill summary + Death Wave animation sequence + visual hero/Boss health bars.
