@@ -111,11 +111,12 @@ Targeted Skill Pool attack visuals use an inward impact convention:
 
 ### v0.2 stabilization before v0.3 — 2026-09-13
 
-Three maintenance fixes were completed before beginning any v0.3 gameplay work:
+Four maintenance fixes were completed before beginning any v0.3 gameplay work:
 
 1. **Animation system repaired.** V2 had still been calling legacy local CSS class names (`attackfx`, `damagefx`, etc.) after the shared animation refactor, while those visuals had moved to the shared library. This caused effects to look like static icons/text. V2 now calls `RPGAnimations.createAnimator()` directly, the same reusable API used by V1. Shared animations use a stationary tile anchor plus independently animated child visuals so target positioning no longer conflicts with transform-based motion. Damage/heal text visibly floats and fades; slash travels across the tile; targeted skill icons move from outside into the target and finish with an impact ring; arrows visibly travel source-to-target; magic/board waves use expanding gradient/ring motion.
 2. **Activity log removed.** The dedicated log strip and its writes (Boss appeared/defeated, skill acquired, merge skill trigger text) were removed from V1 and V2 to reduce vertical UI length. Important persistent state remains visible through stats, skill icons, HP bars, animations and help.
 3. **Clickable stat explanations implemented.** Existing top statistic cards now use the shared `game-help.js` component. V1 provides explanations for SCORE, TURN, MERGES, BOSS and WAVE. V2 provides explanations for SCORE, TURN, MERGE and BEST HERO. The shared component supports click/tap, keyboard Enter/Space and Escape-to-close; each Version owns only its help-data text.
+4. **Mobile Game Info overlay fixed.** The shared statistic-help presentation is now a true viewport overlay rather than participating in the page's flex layout. On phones the panel opens at the top of the screen, uses the available viewport width, respects safe-area insets, scrolls internally when needed, and keeps an obvious close control accessible. This is shared UI maintenance only; no V1 or V2 gameplay rule changed.
 
 These are v0.2 stabilization/UI-engine changes, not Version 2 v0.3 gameplay changes.
 
@@ -155,7 +156,7 @@ Design rule: whether V1 or V2 uses an animation is determined only by whether th
 
 ### Shared statistic-help system
 
-`shared/game-help.js` + `shared/game-help.css` own the interaction and modal UI. Version folders provide `help-data.js` only. This keeps the interaction reusable while allowing the actual rule text to differ between V1 and V2.
+`shared/game-help.js` + `shared/game-help.css` own the interaction and modal UI. Version folders provide `help-data.js` only. This keeps the interaction reusable while allowing the actual rule text to differ between V1 and V2. The modal presentation is explicitly mobile-first: it is a viewport overlay with a top-aligned panel, safe-area-aware spacing and an accessible close control rather than an extra page column.
 
 ### Page/module split
 
