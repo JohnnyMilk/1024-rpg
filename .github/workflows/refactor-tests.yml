@@ -16,9 +16,17 @@ jobs:
         run: node tests/refactor.test.js
       - name: Syntax check shared core
         run: node --check shared/core.js
+      - name: Syntax check shared animations
+        run: node --check shared/animations.js
+      - name: Syntax check shared help
+        run: node --check shared/game-help.js
       - name: Syntax check standard 1024
         run: node --check classic/game.js
       - name: Syntax check Version 1
         run: node --check rpg-v1-0/game.js
+      - name: Syntax check Version 1 help data
+        run: node --check rpg-v1-0/help-data.js
       - name: Syntax check Version 2
         run: node --check rpg-v2-v0-2/game.js
+      - name: Syntax check Version 2 help data
+        run: node --check rpg-v2-v0-2/help-data.js
