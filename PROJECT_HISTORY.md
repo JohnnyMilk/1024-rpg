@@ -8,7 +8,7 @@
 - `rpg-v1-0/index.html` — Version 1 v1.0 FINAL.
 - `type-01-v2/index.html` — Type 01 Version 2 dedicated page and development log.
 - `rpg-v2-v0-1/index.html` — playable Version 2 v0.1 archive.
-- `rpg-v2-v0-2/index.html` — current playable Version 2 v0.2 prototype.
+- `rpg-v2-v0-2/index.html` — stabilized playable Version 2 v0.2 baseline.
 - `shared/core.js` — cross-version reusable helpers and common UI render functions.
 - `shared/rpg-ui.css` — shared RPG board, HP, result and common layout styles.
 - `shared/animations.js` — reusable animation registry/API.
@@ -29,7 +29,7 @@ Type = core gameplay. Type 01 remains four-direction 1024-style sliding, same-Ti
 Version = major design generation inside the same Type. Each Version has its own v0.x development sequence and can later reach its own v1.0 FINAL.
 
 - Type 01 / Version 1: v0.1 -> ... -> v0.7 -> v1.0 FINAL.
-- Type 01 / Version 2: v0.1 -> v0.2 -> ... DEVELOPMENT.
+- Type 01 / Version 2: v0.1 -> v0.2 -> v0.3 -> ... DEVELOPMENT.
 
 ## Version 1 — completed baseline
 
@@ -54,6 +54,8 @@ Approved post-final UI/engine maintenance:
 - Bosses use a contrasting HP bar plus ATK;
 - V1 consumes the shared animation library and shared statistic-help component;
 - the old activity log strip was removed to reduce vertical UI space;
+- shared Game Info uses the mobile-first viewport overlay;
+- shared sword-slash visual is vertically centered in the tile;
 - gameplay rules remain unchanged.
 
 ## Version 2 — development
@@ -75,12 +77,12 @@ Initial 27-skill pool includes: 疾行、風壓、餘勢、共鳴、融合再生
 
 ### v0.2 — Combat Readability + Run History
 
-Status: CURRENT PLAYABLE DEVELOPMENT PROTOTYPE.
+Status: STABILIZED PLAYABLE BASELINE FOR v0.3.
 
 Playable file: `rpg-v2-v0-2/index.html`.
 
 Main v0.2 changes:
-1. Enemy/Boss melee attack uses the early sword-slash visual.
+1. Enemy/Boss melee attack uses the sword-slash visual.
 2. Attack visuals and floating HP numbers begin together and never extend the attack stage beyond 0.75 s.
 3. Game Over restores the detailed Version 1-style score/run history.
 4. Game Over adds `本局取得技能` for all selected Skill Pool abilities.
@@ -111,12 +113,13 @@ Targeted Skill Pool attack visuals use an inward impact convention:
 
 ### v0.2 stabilization before v0.3 — 2026-09-13
 
-Four maintenance fixes were completed before beginning any v0.3 gameplay work:
+Five maintenance fixes were completed before beginning any v0.3 gameplay work:
 
-1. **Animation system repaired.** V2 had still been calling legacy local CSS class names (`attackfx`, `damagefx`, etc.) after the shared animation refactor, while those visuals had moved to the shared library. This caused effects to look like static icons/text. V2 now calls `RPGAnimations.createAnimator()` directly, the same reusable API used by V1. Shared animations use a stationary tile anchor plus independently animated child visuals so target positioning no longer conflicts with transform-based motion. Damage/heal text visibly floats and fades; slash travels across the tile; targeted skill icons move from outside into the target and finish with an impact ring; arrows visibly travel source-to-target; magic/board waves use expanding gradient/ring motion.
-2. **Activity log removed.** The dedicated log strip and its writes (Boss appeared/defeated, skill acquired, merge skill trigger text) were removed from V1 and V2 to reduce vertical UI length. Important persistent state remains visible through stats, skill icons, HP bars, animations and help.
+1. **Animation system repaired.** V2 had still been calling legacy local CSS class names (`attackfx`, `damagefx`, etc.) after the shared animation refactor, while those visuals had moved to the shared library. V2 now calls `RPGAnimations.createAnimator()` directly, the same reusable API used by V1. Damage/heal text visibly floats and fades; slash travels across the tile; targeted skill icons move from outside into the target and finish with an impact ring; arrows visibly travel source-to-target; magic/board waves use expanding gradient/ring motion.
+2. **Activity log removed.** The dedicated log strip and its writes were removed from V1 and V2 to reduce vertical UI length. Important persistent state remains visible through stats, skill icons, HP bars, animations and help.
 3. **Clickable stat explanations implemented.** Existing top statistic cards now use the shared `game-help.js` component. V1 provides explanations for SCORE, TURN, MERGES, BOSS and WAVE. V2 provides explanations for SCORE, TURN, MERGE and BEST HERO. The shared component supports click/tap, keyboard Enter/Space and Escape-to-close; each Version owns only its help-data text.
-4. **Mobile Game Info overlay fixed.** The shared statistic-help presentation is now a true viewport overlay rather than participating in the page's flex layout. On phones the panel opens at the top of the screen, uses the available viewport width, respects safe-area insets, scrolls internally when needed, and keeps an obvious close control accessible. This is shared UI maintenance only; no V1 or V2 gameplay rule changed.
+4. **Mobile Game Info overlay fixed.** The shared statistic-help presentation is a true viewport overlay rather than participating in the page's flex layout. On phones the panel opens at the top of the screen, uses the available viewport width, respects safe-area insets, scrolls internally when needed, and keeps an obvious close control accessible. This is shared UI maintenance only; no V1 or V2 gameplay rule changed.
+5. **Sword-slash visual centered vertically.** The shared enemy/Boss melee slash was shifted downward within its tile so the visible strike crosses the visual center of the grid cell rather than appearing too high. Timing, damage, direction and gameplay behavior were unchanged.
 
 These are v0.2 stabilization/UI-engine changes, not Version 2 v0.3 gameplay changes.
 
@@ -148,9 +151,9 @@ Centralizes common RPG presentation:
 
 Attack/skill animations are not owned by a specific Version. They live under:
 - `shared/animations.js` — animation registry and callable API;
-- `shared/animations.css` — animation visuals/keyframes.
+- `shared/animations.css` — reusable animation visuals/keyframes.
 
-The library includes reusable animation types such as damage, heal, buff, slash, burst/targeted skill impact, arrow, magic-wave, board-wave, skill-tag and pulse.
+The library includes reusable animation types such as damage, heal, buff, slash, burst/targeted skill impact, arrow, magic-wave, board-wave, skill-tag and pulse. The shared slash visual is positioned through `shared/animations.css`, so its centered placement is inherited by every Version that calls the shared slash animation.
 
 Design rule: whether V1 or V2 uses an animation is determined only by whether that version calls it. The animation implementation itself is not duplicated inside a Version folder.
 
@@ -181,17 +184,19 @@ Version 2 design principle: new systems should support the central Type 01 quest
 
 ## v0.3 handoff checkpoint — 2026-09-13
 
-The next conversation should begin Version 2 v0.3 from the stabilized v0.2 baseline. Before changing gameplay:
+Version 2 v0.2 is now the stabilized baseline. v0.3 may begin from it.
+
+Before changing gameplay:
 - read this `PROJECT_HISTORY.md` first;
 - fetch the current `rpg-v2-v0-2/index.html`, `style.css`, `game.js`, and `help-data.js` from GitHub;
 - fetch `shared/core.js`, `shared/rpg-ui.css`, `shared/animations.js`, `shared/animations.css`, `shared/game-help.js`, and `shared/game-help.css` before duplicating or altering shared behavior;
 - preserve the v0.2 animation timing and Death Wave rules unless the user explicitly changes them;
-- preserve the repaired shared animation motion, removed log strip, clickable stat-help UI, HP-bar UI, Game Over history, and 27-skill Skill Pool unless explicitly changed;
+- preserve the repaired shared animation motion, centered slash placement, removed log strip, mobile-first clickable stat-help UI, HP-bar UI, Game Over history, and 27-skill Skill Pool unless explicitly changed;
 - Version 1 remains gameplay-frozen; only reusable shared-engine/UI maintenance may be synchronized back to V1;
-- create a new Version 2 v0.3 playable directory rather than overwriting the v0.2 archive once v0.3 implementation actually starts;
+- create a new `rpg-v2-v0-3/` playable directory rather than overwriting the v0.2 archive once v0.3 implementation starts;
 - update `type-01-v2/index.html`, root milestone references if needed, regression tests/CI expectations, and this file whenever the v0.3 milestone changes.
 
-No v0.3 gameplay rule has been committed yet at this checkpoint. The next chat should first confirm the desired v0.3 design changes, then implement them on top of this stabilized baseline.
+No v0.3 gameplay rule has been committed yet. The next implementation change may now begin in the new v0.3 directory after the desired gameplay rule is specified.
 
 ## Cross-conversation handoff rules
 
@@ -209,6 +214,6 @@ When continuing development:
 ## Current milestone
 
 - Type 01 / Version 1 / v1.0: FINAL / COMPLETED — gameplay frozen; approved shared UI/animation/help infrastructure may be reused without altering rules; activity log removed.
-- Type 01 / Version 2 / v0.2: CURRENT PLAYABLE DEVELOPMENT PROTOTYPE — Skill Pool + sword-slash enemy attack + restored Game Over history + acquired-skill summary + Death Wave sequencing + hero/Boss HP bars + repaired reusable motion animations + clickable stat explanations; activity log removed.
+- Type 01 / Version 2 / v0.2: STABILIZED PLAYABLE BASELINE — Skill Pool + sword-slash enemy attack + restored Game Over history + acquired-skill summary + Death Wave sequencing + hero/Boss HP bars + repaired reusable motion animations + mobile-first clickable stat explanations + centered shared slash visual; activity log removed.
 - Standard, V1 and V2 share reusable infrastructure instead of maintaining duplicate common behavior.
-- Next work item: begin Version 2 v0.3 from the stabilized v0.2 baseline; no v0.3 gameplay changes have been committed yet.
+- Next work item: begin Version 2 v0.3 in a new `rpg-v2-v0-3/` directory from the stabilized v0.2 baseline; no v0.3 gameplay changes have been committed yet.
