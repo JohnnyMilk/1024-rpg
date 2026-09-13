@@ -13,6 +13,9 @@
 - `shared/rpg-ui.css` — shared RPG board, HP, result and common layout styles.
 - `shared/animations.js` — reusable animation registry/API.
 - `shared/animations.css` — reusable animation visuals and keyframes.
+- `shared/game-help.js` — reusable clickable-stat help modal/controller.
+- `shared/game-help.css` — reusable help-card/modal presentation.
+- `rpg-v1-0/help-data.js` / `rpg-v2-v0-2/help-data.js` — version-specific rule text consumed by the shared help UI.
 - `tests/refactor.test.js` — regression suite.
 - `.github/workflows/refactor-tests.yml` — automatic regression and syntax checks.
 - `PROJECT_HISTORY.md` — persistent handoff and architecture history.
@@ -45,10 +48,12 @@ Version 1 score baseline:
 - hero death subtracts hero value;
 - score floor 0.
 
-Approved post-final UI sync:
+Approved post-final UI/engine maintenance:
 - normal Shadow Assassins no longer show redundant `1 HP` text;
 - heroes use proportional HP bars plus compact `current / max HP` text;
 - Bosses use a contrasting HP bar plus ATK;
+- V1 consumes the shared animation library and shared statistic-help component;
+- the old activity log strip was removed to reduce vertical UI space;
 - gameplay rules remain unchanged.
 
 ## Version 2 — development
@@ -98,23 +103,25 @@ A death-trigger attack can start only after the death animation that caused it h
 
 ### v0.2 skill-animation direction correction — 2026-09-13
 
-Targeted Skill Pool attack visuals were corrected from an outward pop to an inward impact motion.
-
-Rule:
-- attacks aimed at a specific target tile must visually travel **from outside toward the target tile**;
+Targeted Skill Pool attack visuals use an inward impact convention:
+- attacks aimed at a specific target tile visually travel **from outside toward the target tile**;
 - they must not appear to originate from the target tile and fly outward;
-- `遺爆` is the reference case: the bomb should look like it is thrown into the affected enemy tile, not thrown out from inside that tile;
-- the same inward convention applies to other targeted Skill Pool attack icons unless a future ability explicitly requires a different source-to-target animation;
-- sword slash, arrow, magic-wave, board-wide status effects and other semantically different animations keep their own animation types.
+- `遺爆` is the reference case: the bomb looks thrown into the affected enemy tile;
+- sword slash, source-to-target arrow, magic-wave and board-wide status effects retain their own semantic animation types.
 
-Implementation:
-- shared `animAttackConverge` now moves targeted attack icons from outside the tile into the tile, with a small impact settle;
-- both the reusable `.animBurst` class and the legacy-compatible `.attackfx` class use this same shared animation;
-- the attack stage remains within the 0.75 s effect timing contract.
+### v0.2 stabilization before v0.3 — 2026-09-13
+
+Three maintenance fixes were completed before beginning any v0.3 gameplay work:
+
+1. **Animation system repaired.** V2 had still been calling legacy local CSS class names (`attackfx`, `damagefx`, etc.) after the shared animation refactor, while those visuals had moved to the shared library. This caused effects to look like static icons/text. V2 now calls `RPGAnimations.createAnimator()` directly, the same reusable API used by V1. Shared animations use a stationary tile anchor plus independently animated child visuals so target positioning no longer conflicts with transform-based motion. Damage/heal text visibly floats and fades; slash travels across the tile; targeted skill icons move from outside into the target and finish with an impact ring; arrows visibly travel source-to-target; magic/board waves use expanding gradient/ring motion.
+2. **Activity log removed.** The dedicated log strip and its writes (Boss appeared/defeated, skill acquired, merge skill trigger text) were removed from V1 and V2 to reduce vertical UI length. Important persistent state remains visible through stats, skill icons, HP bars, animations and help.
+3. **Clickable stat explanations implemented.** Existing top statistic cards now use the shared `game-help.js` component. V1 provides explanations for SCORE, TURN, MERGES, BOSS and WAVE. V2 provides explanations for SCORE, TURN, MERGE and BEST HERO. The shared component supports click/tap, keyboard Enter/Space and Escape-to-close; each Version owns only its help-data text.
+
+These are v0.2 stabilization/UI-engine changes, not Version 2 v0.3 gameplay changes.
 
 ## Shared architecture refactor — 2026-09-13
 
-The project now follows a shared-infrastructure / version-specific-rules architecture.
+The project follows a shared-infrastructure / version-specific-rules architecture.
 
 ### `shared/core.js`
 
@@ -140,11 +147,15 @@ Centralizes common RPG presentation:
 
 Attack/skill animations are not owned by a specific Version. They live under:
 - `shared/animations.js` — animation registry and callable API;
-- `shared/animations.css` — animation classes/keyframes.
+- `shared/animations.css` — animation visuals/keyframes.
 
-The library currently includes reusable animation types such as damage, heal, buff, slash, burst/targeted skill impact, arrow, magic-wave, board-wave, skill-tag and pulse.
+The library includes reusable animation types such as damage, heal, buff, slash, burst/targeted skill impact, arrow, magic-wave, board-wave, skill-tag and pulse.
 
-Design rule: whether V1 or V2 uses an animation is determined only by whether that version calls it. The animation implementation itself should not be duplicated inside a Version folder.
+Design rule: whether V1 or V2 uses an animation is determined only by whether that version calls it. The animation implementation itself is not duplicated inside a Version folder.
+
+### Shared statistic-help system
+
+`shared/game-help.js` + `shared/game-help.css` own the interaction and modal UI. Version folders provide `help-data.js` only. This keeps the interaction reusable while allowing the actual rule text to differ between V1 and V2.
 
 ### Page/module split
 
@@ -157,9 +168,9 @@ Important boundary: reuse infrastructure and presentation primitives; do not mer
 
 ## Regression tests / CI
 
-`tests/refactor.test.js` contains more than 20 regression assertions covering shared helpers, HP UI, history rendering, module wiring, V1 fixed-skill preservation, V2 27-skill preservation, Death Wave ordering and shared animation-direction rules.
+`tests/refactor.test.js` contains more than 20 regression assertions covering shared helpers, HP UI, history rendering, module wiring, V1 fixed-skill preservation, V2 27-skill preservation, Death Wave ordering, shared animation motion and shared stat-help wiring.
 
-`.github/workflows/refactor-tests.yml` runs the suite and JavaScript syntax checks on every push / pull request.
+`.github/workflows/refactor-tests.yml` runs the suite and JavaScript syntax checks for shared core, animations, help, Standard, V1, V1 help-data, V2 and V2 help-data on every push / pull request.
 
 ## Version 2 future work
 
@@ -174,7 +185,7 @@ When continuing development:
 2. Read root `index.html` to confirm hierarchy.
 3. Read the relevant Version page.
 4. Fetch the actual playable HTML plus its `game.js` / `style.css` before modifying code.
-5. Read shared modules before duplicating helpers, HP UI, history UI, input handling or animations.
+5. Read shared modules before duplicating helpers, HP UI, history UI, input handling, help UI or animations.
 6. Never reconstruct current game code from memory alone.
 7. Do not change unspecified gameplay rules, timing, spawning or values.
 8. Run the regression suite and syntax checks after meaningful shared-code changes.
@@ -182,6 +193,6 @@ When continuing development:
 
 ## Current milestone
 
-- Type 01 / Version 1 / v1.0: FINAL / COMPLETED — gameplay frozen; approved shared UI/animation infrastructure may be reused without altering rules.
-- Type 01 / Version 2 / v0.2: CURRENT PLAYABLE DEVELOPMENT PROTOTYPE — Skill Pool + sword-slash enemy attack + restored Game Over history + acquired-skill summary + Death Wave sequencing + hero/Boss HP bars + corrected inward targeted-skill animation direction.
-- Standard, V1 and V2 now share reusable infrastructure instead of maintaining duplicate common behavior.
+- Type 01 / Version 1 / v1.0: FINAL / COMPLETED — gameplay frozen; approved shared UI/animation/help infrastructure may be reused without altering rules; activity log removed.
+- Type 01 / Version 2 / v0.2: CURRENT PLAYABLE DEVELOPMENT PROTOTYPE — Skill Pool + sword-slash enemy attack + restored Game Over history + acquired-skill summary + Death Wave sequencing + hero/Boss HP bars + repaired reusable motion animations + clickable stat explanations; activity log removed.
+- Standard, V1 and V2 share reusable infrastructure instead of maintaining duplicate common behavior.
