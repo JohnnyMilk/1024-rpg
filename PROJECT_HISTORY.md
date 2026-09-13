@@ -30,6 +30,14 @@ Version 1 used three fixed merge-trigger skills: Warrior every merge, Archer eve
 
 Version 1 score baseline: valid move +1; merge adds resulting hero value; normal enemy +20; Boss +100; hero death subtracts hero value; score floor 0.
 
+### Version 1 post-final UI sync
+
+Version 1 remains gameplay-frozen, but the approved Version 2 v0.2 health-display cleanup was synchronized back to the official v1.0 presentation as a UI-only change:
+- normal Shadow Assassins no longer show redundant `1 HP` text and display identity + ATK only;
+- heroes use a proportional HP bar plus compact `current / max HP` text;
+- Bosses use a contrasting proportional HP bar plus compact `current / max HP` text and ATK;
+- no Version 1 gameplay, scoring, spawning, skills, timing, damage, Boss progression or animation rules were changed by this UI sync.
+
 ## Version 2 - development
 
 ### v0.1 - Skill Pool Prototype
@@ -124,5 +132,5 @@ When continuing development:
 
 ## Current milestone
 
-- Type 01 / Version 1 / v1.0: FINAL / COMPLETED.
+- Type 01 / Version 1 / v1.0: FINAL / COMPLETED — gameplay frozen; approved visual HP-bar UI synchronized from Version 2 v0.2.
 - Type 01 / Version 2 / v0.2: CURRENT PLAYABLE DEVELOPMENT PROTOTYPE — Skill Pool + sword-slash enemy attack + restored Game Over history + acquired-skill summary + Death Wave animation sequence + visual hero/Boss health bars.
