@@ -8,10 +8,10 @@
 - `type-01-v2/` — Version 2 entrance and development log.
 - `rpg-v2-v0-1/` — Version 2 v0.1 archive.
 - `rpg-v2-v0-2/` — Version 2 v0.2 stabilized baseline.
-- `rpg-v2-v0-3/` — Version 2 v0.3 playable general-skill test.
+- `rpg-v2-v0-3/` — Version 2 v0.3 playable General Skill Pool test.
+- `rpg-v2-v0-4/` — Version 2 v0.4 playable Special Class / Special Unit test.
 - `shared/` — reusable engine/UI/animation/help modules.
 - `tests/refactor.test.js` + `.github/workflows/refactor-tests.yml` — regression and syntax checks.
-- `V0_3_META_PROGRESSION.md` — v0.3 skill/meta design notes.
 
 ## Naming rules
 Type = core gameplay. Type 01 remains four-direction 1024-style sliding, same-value hero merging, and heroes/enemies sharing the board.
@@ -21,120 +21,126 @@ Version = major design generation inside the same Type.
 - Type 01 / Version 2: v0.1 -> v0.2 -> v0.3 -> v0.4 ... DEVELOPMENT.
 
 ## Version 1 — completed baseline
-Version 1 v1.0 established the 4x4 board, hero merging, enemies/Bosses, HP/ATK combat, endless Boss progression, scoring, animation pipeline and Game Over statistics.
-
-Fixed V1 skills:
-- Warrior: every merge.
-- Archer: every 3 merges.
-- Mage: every 5 merges.
-
-V1 score baseline: valid move +1; merge adds resulting hero value; normal enemy +20; Boss +100; hero death subtracts hero value; score floor 0.
-
-Version 1 gameplay is frozen. Shared UI/engine maintenance may be reused without changing V1 rules.
+Version 1 v1.0 established the 4x4 board, hero merging, enemies/Bosses, HP/ATK combat, endless Boss progression, scoring, animation pipeline and Game Over statistics. Version 1 gameplay is frozen; shared UI/engine maintenance may be reused without changing V1 rules.
 
 ## Version 2 v0.1 — Skill Pool Prototype
-Replaced the fixed V1 class attacks with a run-wide Skill Pool. First creation of each new historical highest hero value (2, 4, 8, 16...) grants a choice of 1 from 3 unowned skills. Recreating an already reached value gives no reward.
+First creation of each new historical highest hero value grants a choice of 1 from 3 unowned General Skills.
 
 ## Version 2 v0.2 — Stabilized Baseline
-Status: STABILIZED PLAYABLE BASELINE.
-
-Playable: `rpg-v2-v0-2/index.html`.
-
-Key stabilized systems:
-- 27-skill original Skill Pool;
-- centered enemy/Boss sword slash;
-- fixed animation sequence: move -> merge -> attack/HP -> death;
-- Death Wave chaining: death-trigger effects wait until the causing death animation finishes;
-- Game Over score/run history and acquired-skill summary;
-- hero/Boss HP bars; normal Shadow Assassin omits redundant 1 HP text;
-- shared animation library and mobile-first clickable stat help;
-- activity log removed.
-
-v0.2 remains archived and must not be overwritten by later gameplay versions.
+Status: STABILIZED PLAYABLE BASELINE. Preserve Death Wave sequencing, Game Over history, HP bars, shared animations/help and overall combat readability behavior.
 
 ## Version 2 v0.3 — General Skill Pool Rework
-Status: PLAYABLE TEST.
+Status: ARCHIVED PLAYABLE TEST.
 
 Playable: `rpg-v2-v0-3/index.html`.
 
-v0.3 is intentionally limited to the General Skill Pool. Special classes and special units are moved to v0.4.
+Key rules retained into v0.4:
+- 27 General Skills with unique Emoji.
+- New highest hero values grant General Skill 3-choice rewards.
+- Hero-first spawn order: player Hero first, enemy second.
+- Normal enemies fixed at 1 HP; Bosses are the primary multi-HP targets.
+- `突變` and `危機感知` were defined in v0.3 but disabled until special units existed.
+- `援軍` may generate a second hero during one hero-generation event.
+- General skill meta progression remains planned as Base + 3 out-of-run upgrades; upgrade currency/method undecided.
 
-### Global rules
-- New highest hero values continue to trigger General Skill 3-choice rewards.
-- Unit-generation priority is always: **player Hero first -> enemy second**.
-- If the Hero uses the final empty cell, the enemy does not spawn.
-- Normal enemies remain fixed at 1 HP; normal-enemy HP does not scale with progression. Bosses remain the main high-HP targets.
-- Skill categories are design/debug labels only; they do not constrain gameplay.
-- Every skill uses a unique Emoji so future skill upgrades can keep a stable visual identity.
+## Version 2 v0.4 — Special Classes / Special Units
+Status: PLAYABLE TEST.
 
-### Reviewed 27-skill design
-1. 💨 疾行 — every 5 valid moves, the next valid move does not generate an enemy.
-2. 🌪️ 風壓 — one swipe moves at least 4 Heroes: 1 random enemy takes 1 damage.
-3. ⏳ 餘勢 — 3 consecutive turns without merging: all Heroes heal 1 HP on turn 3.
-4. 💥 共鳴 — every 5 merges, all enemies take 1 damage.
-5. 🌱 融合再生 — merged result restores to full HP.
-6. ✨ 超載 — 2+ merges in one swipe: all enemies take 1 damage.
-7. ❤️‍🩹 求生 — every 10 valid moves, all Heroes heal 1 HP.
-8. 🍀 幸運 — every 10 valid moves, next normal Hero has 25% chance to spawn one tier higher.
-9. 💣 遺爆 — Hero death damages 1 random enemy within the surrounding 8 cells.
-10. 👻 遺志 — Hero death makes the next merge add 1 random attack.
-11. 🩸 血祭 — every 3 allied deaths, next allied spawn rises one tier; ready effect does not stack.
-12. 🌑 靈魂收割 — every 3 enemy kills, 1 random Hero heals 1 HP.
-13. ⚔️ 連殺 — 3 enemy kills in the same turn adds 1 random attack.
-14. 🔴 殺意 — every 5 accumulated enemy kills, next skill damage +1.
-15. ⚡ 先制 — Boss takes 2 damage when it appears.
-16. 🏰 堡壘 — first 2 turns after Boss appears, Hero damage received -1.
-17. 🌟 優質增援 — every 10th generated Hero appears as value 2.
-18. 🎲 突變 — 10% chance for a new Hero to become a special unit; **defined but disabled in v0.3, activates with v0.4 special-unit system**.
-19. 🐺 孤軍 — while Heroes <=3, skill damage +1.
-20. 🧱 人海 — while Heroes >=6, every 5 turns 1 random Hero heals 1 HP.
-21. 🚨 危機感知 — with <=1 empty cell, next Hero is guaranteed special; **defined but disabled in v0.3, activates in v0.4**.
-22. 👑 突破者 — new highest hero value grants extra Score equal to value x2.
-23. 🏆 獵王 — Boss kill score +100 -> +150.
-24. 💎 高風險投資 — enemy kill score x2; Hero-death penalty x2.
-25. 🗡️ 強襲 — damage dealt to Boss +1.
-26. 🎯 精準 — every 15 merges, 3 random enemies each take 1 damage.
-27. 🪖 援軍 — each Hero-generation event has 5% chance to generate 2 Heroes; intended to also apply to special units when v0.4 enables them.
+Playable: `rpg-v2-v0-4/index.html`.
 
-Because special classes/units are deferred, v0.3 skill choices draw from the 25 currently executable skills; 突變 and 危機感知 remain in the 27-skill design registry for v0.4.
+### Class selection and rewards
+- The **first successful merge of the run** triggers class selection first.
+- Choose exactly one class for the run: **Warrior / Ranger / Priest**.
+- Class is locked for the rest of the run.
+- If the first merge also creates a new historical highest hero value, class selection resolves first, then the General Skill 3-choice reward.
+- After every Boss kill, choose 1 of 3 randomly offered, **unowned** class rewards.
+- Boss reward pool = selected class's 3 exclusive skills + 5 universal class skills = 8 total possible class rewards.
+- Bosses can continue indefinitely, so a sufficiently long run may eventually collect all 8 class rewards. When fewer than 3 remain, show all remaining choices.
 
-### Meta progression design
-Every skill is planned to support Base + 3 out-of-run upgrades. Upgrade currency/method is still undecided. Example: 幸運 Base 25% -> Upgrade 1 50% -> Upgrade 2 75% -> Upgrade 3 100%.
+### Special-unit identity and merging
+- Special-unit abilities belong to the individual special unit; effects originate from that unit's tile whenever practical.
+- A run contains only the selected class of special unit.
+- Normal + Special of the same value can merge; the result remains Special.
+- Special + Special of the same value can merge normally.
+- Numeric 1024 merge identity remains 1 -> 2 -> 4 -> 8... .
 
-## Version 2 v0.4 — next major system
-Special profession/class work moves here. Current intended directions:
-- Melee / 近戰
-- Ranged / 遠程
-- Support / 輔助
+### Special-unit generation
+Special units may be created by:
+1. the next normally generated hero after first class selection;
+2. each first-reached Score milestone 100, 200, 300... (milestones are claimed once even if Score later falls);
+3. General Skill `突變`: 10% chance a generated hero becomes Special;
+4. General Skill `危機感知`: when empty cells <=1, the next generated hero is Special;
+5. class reward `轉生`;
+6. permanent class reward state `覺醒` after its condition is met.
 
-v0.4 will define class selection, class-specific skill pools, special units, special-unit spawning and the interactions of 突變／危機感知／援軍 with those units. Do not back-port these mechanics into v0.3 unless explicitly requested.
+Hero-first spawn order remains mandatory. `援軍` applies to Special generation as well; when it duplicates a generation event, the second hero follows the first hero's Special/Normal state in v0.4.
+
+### Warrior — base abilities
+1. **迎戰** — when a Warrior Special enters the board, randomly choose up to 2 enemies in the surrounding 8 cells; each takes 1 skill damage.
+2. **突進** — if a Warrior actually moves and is stopped by an enemy in its forward direction, that blocking enemy takes 1 skill damage.
+
+Warrior exclusive skills:
+- **橫掃** — 迎戰 attacks all enemies in the surrounding 8 cells instead of up to 2 random enemies.
+- **衝擊** — after the Warrior actually moves at least 2 cells in one swipe, 1 random enemy in the surrounding 8 cells takes 1 skill damage.
+- **重擊** — when a Warrior participates in a merge, all enemies in the surrounding 8 cells of the merged result take 1 skill damage.
+
+### Ranger — base abilities
+1. **遠射** — when a Ranger Special enters the board, randomly choose up to 2 enemies outside its surrounding 8 cells; each takes 1 skill damage.
+2. **回身射擊** — after a Ranger actually moves, it attacks the nearest enemy on the straight line in the direction opposite to movement for 1 skill damage.
+
+Ranger exclusive skills:
+- **狙擊** — 遠射 attacks up to 4 valid enemies instead of 2.
+- **穿透箭** — 回身射擊 attacks every enemy on that straight line instead of only the nearest one.
+- **箭雨** — when a Ranger participates in a merge, every enemy outside the merged result's surrounding 8 cells takes 1 skill damage.
+
+### Priest — base abilities
+1. **治癒波** — when a Priest Special enters the board, all injured allies in its surrounding 8 cells recover 1 HP.
+2. **守護** — after a Priest actually moves, every allied unit in the 3x3 area centered on its final tile, including the Priest, receives one full-damage block. Guard does not stack; a later Guard refreshes the single block.
+
+Priest exclusive skills:
+- **聖療** — 治癒波 becomes a board-wide allied heal for 1 HP.
+- **復甦** — an allied hero that dies in the surrounding 8 cells of a living Priest can revive once in place with 1 HP.
+- **懲戒** — when Guard granted by a Priest blocks damage, that Priest deals 1 skill damage to the enemy that caused the blocked hit, if that Priest is still alive.
+
+### Universal class rewards (5)
+1. **躍升** — if both participants of a merge are Special, the merged result advances two numeric tiers total (example: Special 2 + Special 2 -> Special 8).
+2. **連奏** — every Special-unit entry base ability automatically casts one additional time.
+3. **連攜** — when a new Special unit enters, every other Special unit already on the board triggers its own entry base ability once. Entry abilities triggered by 連攜 still benefit from 連奏, but 連攜 cannot trigger another 連攜 chain.
+4. **覺醒** — once all living allied units on the board are Special, the state permanently activates for the rest of the run; all future hero spawns are Special even if the board later changes.
+5. **轉生** — when an eligible Special unit dies for the first time, the next hero that would otherwise be Normal is converted to Special. A Special unit created by 轉生 is not eligible to create another 轉生 chain.
+
+### General Skill activation changes in v0.4
+- `突變` and `危機感知` are now active and selectable.
+- Existing General Skill behavior otherwise remains based on v0.3.
+- Class skill damage participates in normal General Skill damage modifiers such as `孤軍`, `殺意` and Boss bonus `強襲` where applicable.
+
+### Animation / source-tile rule
+- Special-unit ranged attacks should visually originate from the triggering Special unit tile when the shared animation library supports a source/target animation.
+- Existing move -> merge -> attack/HP -> death sequencing and Death Wave safety remain the baseline.
 
 ## Shared architecture
 Keep shared infrastructure separate from version-specific gameplay.
 - `shared/core.js`: timing, random/array/cell helpers, HP markup, input binding, run-history renderer.
 - `shared/rpg-ui.css`: common board/unit/HP/result presentation.
 - `shared/animations.js` + `shared/animations.css`: reusable damage/heal/buff/slash/burst/arrow/magic/board animations.
-- Targeted player burst uses center-bloom: appears at target center, scales up, fades.
-- Enemy/Boss slash crosses the visual center of the tile.
 - `shared/game-help.js` + CSS: reusable mobile-first stat help overlay.
 
 ## Regression / CI
-`tests/refactor.test.js` covers shared helpers, preserved V1/V2 rules, v0.2 archive expectations, v0.3 skill registry, spawn priority, shared animations and help wiring.
+`tests/refactor.test.js` covers shared helpers, archived-version expectations, v0.3 General Skill registry and v0.4 Special Class rules.
 
-`.github/workflows/refactor-tests.yml` runs regression assertions and JavaScript syntax checks, including v0.3 `game.js` and `help-data.js`.
+`.github/workflows/refactor-tests.yml` runs regression assertions and JavaScript syntax checks through v0.4.
 
 ## Cross-conversation handoff rules
 1. Read this file first.
 2. Fetch the current target version from GitHub before modifying it.
-3. Read shared modules before duplicating shared behavior.
-4. Never reconstruct current game code from memory alone.
-5. Never overwrite archived playable versions.
-6. Preserve v0.2 Death Wave/animation/UI behavior unless explicitly changed.
-7. Version 1 remains gameplay-frozen.
-8. Update tests/CI and this history after meaningful gameplay milestones.
+3. Never overwrite archived playable versions.
+4. Preserve v0.2 Death Wave/animation/UI behavior unless explicitly changed.
+5. Version 1 remains gameplay-frozen.
+6. Keep General Skills and class-specific gameplay conceptually separate.
+7. Update tests/CI and this history after meaningful gameplay milestones.
 
 ## Current milestone — 2026-09-14
 - Version 1 v1.0: FINAL.
 - Version 2 v0.2: STABILIZED BASELINE / archived playable.
-- Version 2 v0.3: PLAYABLE TEST / General Skill Pool rework.
-- Version 2 v0.4: NEXT / special classes and special units.
+- Version 2 v0.3: ARCHIVED PLAYABLE / General Skill Pool rework.
+- Version 2 v0.4: PLAYABLE TEST / Special Classes + Special Units.
