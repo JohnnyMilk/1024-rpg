@@ -2,7 +2,7 @@
 const ICONS={crowd:'👥',killingIntent:'😈',warSweep:'🪃',warImpact:'💫',rangerSnipe:'🔭',priestPunish:'⚖️',ascend:'⏫',encore:'🎼',awakening:'🌅'};
 const BASIC={
 warrior:{entryName:'迎戰',entry:'特殊戰士進場時，隨機攻擊周圍 8 格內最多 2 名敵人，各造成 1 技能傷害。',moveName:'突進',move:'戰士實際移動後若被前方敵人阻擋，對該敵人造成 1 技能傷害。'},
-ranger:{entryName:'遠射',entry:'特殊遊俠進場時，隨機攻擊周圍 8 格以外最多 2 名敵人，各造成 1 技能傷害。',moveName:'回身射擊',move:'遊俠實際移動後，向移動反方向射擊，命中直線上最近的敵人並造成 1 技能傷害。'},
+ranger:{entryName:'遠射',entry:'特殊遊俠每次實際移動後，自動攻擊距離自己最遠的 1 名敵人，造成 1 技能傷害。',moveName:'回身射擊',move:'遊俠實際移動後，同時向移動反方向射擊；若該方向有敵人，命中直線上最近的敵人並造成 1 技能傷害。'},
 priest:{entryName:'治癒波',entry:'特殊祭司進場時，使周圍 8 格內受傷的友方各恢復 1 HP。',moveName:'守護',move:'祭司實際移動後，自己與周圍 8 格內友方獲得 1 次完全抵銷傷害的守護；再次施放會刷新，不疊加。'}
 };
 function patchSkillIcons(){const api=window.__V2_TEST__;if(!api)return;for(const s of api.getSkills())if(ICONS[s.id]&&s.icon!==ICONS[s.id])s.icon=ICONS[s.id];const pools=api.getClassSkills();for(const s of [...Object.values(pools.CLASS_SKILLS).flat(),...pools.COMMON_SKILLS])if(ICONS[s.id]&&s.icon!==ICONS[s.id])s.icon=ICONS[s.id];const prof=api.getProfessions();if(prof){if(prof.warrior.icon!=='⚔️')prof.warrior.icon='⚔️';if(prof.ranger.icon!=='🏹')prof.ranger.icon='🏹';if(prof.priest.icon!=='✝️')prof.priest.icon='✝️'}}
