@@ -9,6 +9,6 @@ function rankFromUses(n){n=Math.max(0,Number(n)||0);return n>=90?'MAX':n>=60?'LV
 function progress(n){n=Math.max(0,Number(n)||0);if(n>=90)return{rank:'MAX',current:30,target:30,next:null,total:n};let base=n>=60?60:n>=30?30:0;return{rank:rankFromUses(n),current:n-base,target:30,next:base+30,total:n}}
 function recordSkillUse(id,count=1){if(!id||count<=0)return;let s=load(),rec=s.skills[id]||(s.skills[id]={uses:0});rec.uses=Math.max(0,Number(rec.uses||0))+count;save(s);window.dispatchEvent(new CustomEvent('rpg-save-updated',{detail:{type:'skill',id,uses:rec.uses}}))}
 function recordRun(r){let s=load(),st=s.stats;st.gamesPlayed++;st.totalMoves+=r.moves||0;st.totalMerges+=r.merges||0;st.totalEnemiesKilled+=r.enemyDefeated||0;st.totalBossKills+=r.bossKills||0;st.totalHeroesLost+=r.heroesLost||0;st.bestHero=Math.max(st.bestHero||1,r.bestHero||1);st.bestScore=Math.max(st.bestScore||0,r.score||0);save(s);window.dispatchEvent(new CustomEvent('rpg-save-updated',{detail:{type:'run'}}))}
-function clear(){localStorage.removeItem(KEY);window.dispatchEvent(new CustomEvent('rpg-save-updated',{detail:{type:'clear'}}))}
+function clear(){let fresh=blank();save(fresh);window.dispatchEvent(new CustomEvent('rpg-save-updated',{detail:{type:'clear'}}));return fresh}
 window.RPGSave={KEY,CURRENT,load,save,uses,rankFromUses,progress,recordSkillUse,recordRun,clear};
 })();
