@@ -1,7 +1,7 @@
 (function(){'use strict';
 const KEY='1024RPG.save',CURRENT=1;
-function blank(){let now=new Date().toISOString();return{saveVersion:CURRENT,gameVersion:'v0.5',createdAt:now,updatedAt:now,skills:{},stats:{gamesPlayed:0,totalMoves:0,totalMerges:0,totalEnemiesKilled:0,totalBossKills:0,totalHeroesLost:0,bestHero:0,bestScore:0}}}
-function migrate(s){if(!s||typeof s!=='object')return blank();if(!s.saveVersion)s.saveVersion=1;s.skills=s.skills||{};s.stats=Object.assign(blank().stats,s.stats||{});if((s.stats.gamesPlayed||0)===0&&(s.stats.totalMoves||0)===0&&(s.stats.totalMerges||0)===0&&(s.stats.bestScore||0)===0&&s.stats.bestHero===1)s.stats.bestHero=0;s.gameVersion='v0.5';return s}
+function blank(){let now=new Date().toISOString();return{saveVersion:CURRENT,gameVersion:'v0.6',createdAt:now,updatedAt:now,skills:{},stats:{gamesPlayed:0,totalMoves:0,totalMerges:0,totalEnemiesKilled:0,totalBossKills:0,totalHeroesLost:0,bestHero:0,bestScore:0}}}
+function migrate(s){if(!s||typeof s!=='object')return blank();if(!s.saveVersion)s.saveVersion=1;s.skills=s.skills||{};s.stats=Object.assign(blank().stats,s.stats||{});if((s.stats.gamesPlayed||0)===0&&(s.stats.totalMoves||0)===0&&(s.stats.totalMerges||0)===0&&(s.stats.bestScore||0)===0&&s.stats.bestHero===1)s.stats.bestHero=0;s.gameVersion='v0.6';return s}
 function load(){try{let raw=localStorage.getItem(KEY);return raw?migrate(JSON.parse(raw)):blank()}catch(e){return blank()}}
 function save(s){s.updatedAt=new Date().toISOString();localStorage.setItem(KEY,JSON.stringify(s));return s}
 function uses(id){let s=load();return Math.max(0,Number(s.skills[id]?.uses||0))}
