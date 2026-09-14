@@ -1,0 +1,57 @@
+name: Ranger Hotfix
+on:
+  push:
+    paths:
+      - '.github/workflows/ranger-hotfix.yml'
+permissions:
+  contents: write
+jobs:
+  hotfix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Patch Ranger skills
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('rpg-v2-v0-4/game.js')
+          s=p.read_text()
+          old="ranger:[{id:'rangerSnipe',icon:'🎯',name:'狙擊',desc:'遠射觸發時，攻擊數量由 2 名提升為最多 4 名。'},{id:'rangerPierce',icon:'🏹',name:'穿透箭',desc:'回身射擊改為攻擊移動反方向直線上的所有敵人。'},{id:'rangerRain',icon:'🌧️',name:'箭雨',desc:'遊俠參與合併後，合併位置周圍 8 格以外的所有敵人受到 1 傷害。'}],"
+          new="ranger:[{id:'rangerSnipe',icon:'🎯',name:'狙擊',desc:'遠射觸發時，攻擊數量由最遠 1 名提升為最遠 2 名。'},{id:'rangerQuickShot',icon:'🪶',name:'迅捷射擊',desc:'遊俠一次實際移動至少 2 格時，額外再觸發 1 次遠射。'},{id:'rangerRain',icon:'🌧️',name:'箭雨',desc:'遊俠參與合併後，合併位置周圍 8 格以外的所有敵人受到 1 傷害。'}],"
+          assert old in s
+          s=s.replace(old,new,1)
+          old="function entryEvents(hero){let ev=[];if(!hero||!hero.special||rem(hero)<=0)return ev;let cast=()=>{if(hero.profession==='warrior'){let es=livingEnemies().filter(e=>near8(hero,e)),targets=hasClass('warSweep')?es:randomTargets(es,2),d=sdmg();for(let e of targets)hitEnemy(e,d,ev,'warriorEntry','⚔️',hero,false)}else if(hero.profession==='ranger'){let es=livingEnemies().filter(e=>!near8(hero,e)),targets=randomTargets(es,hasClass('rangerSnipe')?4:2),d=sdmg();for(let e of targets)hitEnemy(e,d,ev,'rangerEntry','🏹',hero,true)}else if(hero.profession==='priest'){let hs=hasClass('priestHolyHeal')?livingHeroes():livingHeroes().filter(h=>near8(hero,h));for(let h of hs)heal(h,1,ev,'priestEntry')}};cast();if(hasClass('encore'))cast();return ev}"
+          new="function entryEvents(hero){let ev=[];if(!hero||!hero.special||rem(hero)<=0)return ev;let cast=()=>{if(hero.profession==='warrior'){let es=livingEnemies().filter(e=>near8(hero,e)),targets=hasClass('warSweep')?es:randomTargets(es,2),d=sdmg();for(let e of targets)hitEnemy(e,d,ev,'warriorEntry','⚔️',hero,false)}else if(hero.profession==='priest'){let hs=hasClass('priestHolyHeal')?livingHeroes():livingHeroes().filter(h=>near8(hero,h));for(let h of hs)heal(h,1,ev,'priestEntry')}};cast();if(hasClass('encore'))cast();return ev}"
+          assert old in s
+          s=s.replace(old,new,1)
+          old="function dirVec(dir){return dir==='up'?[-1,0]:dir==='down'?[1,0]:dir==='left'?[0,-1]:[0,1]}function lineTargets(source,dir){let [dr,dc]=dirVec(dir),out=[];for(let k=1;k<N;k++){let r=source.r+dr*k,c=source.c+dc*k;if(r<0||r>=N||c<0||c>=N)break;let e=E.find(x=>x.type!=='hero'&&rem(x)>0&&x.r===r&&x.c===c);if(e)out.push(e)}return out}"
+          new=old+"function farthestTargets(source,n){return livingEnemies().slice().sort((a,b)=>{let da=Math.abs(a.r-source.r)+Math.abs(a.c-source.c),db=Math.abs(b.r-source.r)+Math.abs(b.c-source.c);return db-da||a.id-b.id}).slice(0,n)}"
+          assert old in s
+          s=s.replace(old,new,1)
+          old="function moveClassEvents(moveMeta,dir){let ev=[];for(let m of moveMeta){let h=E.find(x=>x.id===m.resultId);if(!h||!h.special||rem(h)<=0||!m.specialMoved)continue;if(h.profession==='warrior'){if(m.blockedEnemy){let e=E.find(x=>x.id===m.blockedEnemy);if(e)hitEnemy(e,sdmg(),ev,'warriorCharge','⚔️',h,false)}if(hasClass('warImpact')&&m.distance>=2){let es=livingEnemies().filter(e=>near8(h,e));if(es.length)hitEnemy(randomItem(es),sdmg(),ev,'warImpact','💢',h,false)}}else if(h.profession==='ranger'){let reverse=dir==='up'?'down':dir==='down'?'up':dir==='left'?'right':'left',es=lineTargets(h,reverse);if(es.length){let targets=hasClass('rangerPierce')?es:[es[0]],d=sdmg();for(let e of targets)hitEnemy(e,d,ev,'rangerBackshot','🏹',h,true)}}else if(h.profession==='priest'){for(let ally of livingHeroes().filter(x=>Math.abs(x.r-h.r)<=1&&Math.abs(x.c-h.c)<=1)){ally.guard=true;ally.guardBy=h.id;ev.push({t:'buff',e:ally,text:'🛡️'})}}}return ev}"
+          new="function moveClassEvents(moveMeta,dir){let ev=[];for(let m of moveMeta){let h=E.find(x=>x.id===m.resultId);if(!h||!h.special||rem(h)<=0||!m.specialMoved)continue;if(h.profession==='warrior'){if(m.blockedEnemy){let e=E.find(x=>x.id===m.blockedEnemy);if(e)hitEnemy(e,sdmg(),ev,'warriorCharge','⚔️',h,false)}if(hasClass('warImpact')&&m.distance>=2){let es=livingEnemies().filter(e=>near8(h,e));if(es.length)hitEnemy(randomItem(es),sdmg(),ev,'warImpact','💢',h,false)}}else if(h.profession==='ranger'&&m.distance>0){let fireFarshot=sid=>{let far=farthestTargets(h,hasClass('rangerSnipe')?2:1);if(far.length){let d=sdmg();for(let e of far)hitEnemy(e,d,ev,sid,'🏹',h,true)}};fireFarshot('rangerFarshot');if(hasClass('rangerQuickShot')&&m.distance>=2)fireFarshot('rangerQuickShot');let reverse=dir==='up'?'down':dir==='down'?'up':dir==='left'?'right':'left',es=lineTargets(h,reverse);if(es.length){let d=sdmg();hitEnemy(es[0],d,ev,'rangerBackshot','🏹',h,true)}}else if(h.profession==='priest'){for(let ally of livingHeroes().filter(x=>Math.abs(x.r-h.r)<=1&&Math.abs(x.c-h.c)<=1)){ally.guard=true;ally.guardBy=h.id;ev.push({t:'buff',e:ally,text:'🛡️'})}}}return ev}"
+          assert old in s
+          s=s.replace(old,new,1)
+          p.write_text(s)
+      - name: Validate syntax
+        run: node --check rpg-v2-v0-4/game.js
+      - name: Bump cache key
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('rpg-v2-v0-4/index.html')
+          s=p.read_text().replace('20260914g','20260914h')
+          p.write_text(s)
+      - name: Commit hotfix
+        run: |
+          git config user.name "Johnny Muscovado"
+          git config user.email "actions@github.com"
+          git rm .github/workflows/ranger-hotfix.yml
+          git add rpg-v2-v0-4/game.js rpg-v2-v0-4/index.html
+          git commit -m "Restore Ranger movement skill kit"
+          git push origin main
