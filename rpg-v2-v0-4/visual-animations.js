@@ -10,6 +10,6 @@ a.register('shock-wave',p=>anchor(p.source||p.target,'v04ShockWave'));
 a.register('link-line',p=>trail(p.source,p.target,'v04LinkLine'));
 a.register('ascend-flash',p=>anchor(p.target,'v04AscendFlash'));
 a.register('rebirth',p=>anchor(p.target,'v04Rebirth'));
-a.play=function(name,p={}){if(name==='burst'&&['⚔️','💢'].includes(p.icon)){anchor(p.target,'v04MeleeImpact')}else if(name==='burst'&&p.icon==='🔨'){anchor(p.target,'v04ShockWave')}else if(name==='heal'){anchor(p.target,'v04HolyPulse')}else if(name==='buff'&&(p.text==='🛡️'||p.text==='BLOCK')){anchor(p.target,'v04Shield')}else if(name==='arrow'){trail(p.source,p.target,'v04ArrowTrail')}return raw(name,p)};
+a.play=function(name,p={}){if(name==='burst'&&['⚔️','💢'].includes(p.icon)){anchor(p.target,'v04MeleeImpact')}else if(name==='burst'&&p.icon==='🔨'){anchor(p.target,'v04ShockWave')}else if(name==='heal'){anchor(p.target,'v04HolyPulse')}else if(name==='buff'&&(p.text==='🛡️'||p.text==='BLOCK')){anchor(p.target,'v04Shield')}else if(name==='arrow'){return raw(name,p)}return raw(name,p)};
 return a};
 })();
