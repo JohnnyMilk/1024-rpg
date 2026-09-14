@@ -1,7 +1,7 @@
 name: Refactor regression tests
 on:
   push:
-    branches: [ main, v0-3-playable ]
+    branches: [ main, v0-3-playable, v0-4-special-classes ]
   pull_request:
     branches: [ main ]
 jobs:
@@ -34,3 +34,7 @@ jobs:
         run: node --check rpg-v2-v0-3/game.js
       - name: Syntax check Version 2 v0.3 help data
         run: node --check rpg-v2-v0-3/help-data.js
+      - name: Syntax check Version 2 v0.4
+        run: node --check rpg-v2-v0-4/game.js
+      - name: Syntax check Version 2 v0.4 help data
+        run: node --check rpg-v2-v0-4/help-data.js
