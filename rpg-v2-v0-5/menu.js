@@ -13,7 +13,6 @@ $('startGame').onclick=()=>{show(game);refreshGameLayout()};
 $('openHistory').onclick=()=>{historyTab='overview';renderHistory();show(history)};
 $('historyBack').onclick=()=>show(menu);
 $('menuBtn').onclick=()=>show(menu);
-$('restart').onclick=()=>show(menu);
 $('clearData').onclick=()=>{confirm.classList.add('show');confirm.dataset.step='1';$('clearText').textContent='將刪除所有遊戲歷程、技能等級與統計資料。';$('clearYes').textContent='繼續'};
 $('clearNo').onclick=()=>confirm.classList.remove('show');
 $('clearYes').onclick=()=>{if(confirm.dataset.step==='1'){confirm.dataset.step='2';$('clearText').textContent='永久刪除後無法復原。確定清除所有記錄？';$('clearYes').textContent='永久刪除'}else{RPGSave.clear();confirm.classList.remove('show');historyTab='overview';renderHistory()}};
