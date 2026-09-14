@@ -23,7 +23,7 @@ RPGShared.randomItem=function(list){
   else if(stack.includes('addEnemy')){blocked=enemyBlocked;kind='enemy'}
   if(!blocked)return baseRandomItem(list);
   const filtered=list.filter(item=>!Array.isArray(item)||item[0]!==blocked.r||item[1]!==blocked.c);
-  if(!filtered.length)return null;
+  if(!filtered.length)return baseRandomItem(list);
   if(kind==='hero')heroBlocked=null;else enemyBlocked=null;
   return baseRandomItem(filtered);
 };
