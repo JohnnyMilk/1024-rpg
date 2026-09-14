@@ -1,7 +1,7 @@
 name: Refactor regression tests
 on:
   push:
-    branches: [ main, v0-3-playable, v0-4-special-classes ]
+    branches: [ main, v0-3-playable, v0-4-special-classes, v0-4-visual-pass-final ]
   pull_request:
     branches: [ main ]
 jobs:
@@ -14,6 +14,8 @@ jobs:
           node-version: '20'
       - name: Run regression assertions
         run: node tests/refactor.test.js
+      - name: Run v0.4 visual assertions
+        run: node tests/v04-visual.test.js
       - name: Syntax check shared core
         run: node --check shared/core.js
       - name: Syntax check shared animations
@@ -36,5 +38,9 @@ jobs:
         run: node --check rpg-v2-v0-3/help-data.js
       - name: Syntax check Version 2 v0.4
         run: node --check rpg-v2-v0-4/game.js
+      - name: Syntax check Version 2 v0.4 visual animations
+        run: node --check rpg-v2-v0-4/visual-animations.js
+      - name: Syntax check Version 2 v0.4 visual polish
+        run: node --check rpg-v2-v0-4/visual-polish.js
       - name: Syntax check Version 2 v0.4 help data
         run: node --check rpg-v2-v0-4/help-data.js
