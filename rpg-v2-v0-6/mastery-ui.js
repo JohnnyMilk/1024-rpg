@@ -26,6 +26,11 @@ const EFFECTS={
 '強襲':['對 Boss 造成傷害時額外 +1。','對 Boss 造成傷害時額外 +2。','對 Boss 造成傷害時額外 +3。','對 Boss 造成傷害時額外 +4。'],
 '援軍':['英雄生成時有 5% 機率額外生成 1 名相同英雄。','英雄生成時有 10% 機率額外生成 1 名相同英雄。','英雄生成時有 15% 機率額外生成 1 名相同英雄。','英雄生成時有 20% 機率額外生成 1 名相同英雄。']
 };
-function apply(){const panel=document.getElementById('panel');if(!panel)return;const d=panel.querySelector('.detail');if(!d)return;const name=d.querySelector('h2')?.textContent.trim(),rows=EFFECTS[name];if(!rows)return;const levelText=d.querySelector('.detailLevel')?.textContent||'',idx=levelText.includes('MAX')?3:levelText.includes('LV3')?2:levelText.includes('LV2')?1:0,p=d.querySelector('p');if(p&&p.textContent!==rows[idx])p.textContent=rows[idx]}
+function levelIndex(text=''){return text.includes('MAX')?3:text.includes('LV3')?2:text.includes('LV2')?1:0}
+function apply(){const panel=document.getElementById('panel');if(!panel)return;
+  const d=panel.querySelector('.detail');
+  if(d){const name=d.querySelector('h2')?.textContent.trim(),rows=EFFECTS[name];if(rows){const p=d.querySelector('p'),text=rows[levelIndex(d.querySelector('.detailLevel')?.textContent||'')];if(p&&p.textContent!==text)p.textContent=text}}
+  panel.querySelectorAll('.choice').forEach(choice=>{const strong=choice.querySelector('strong'),desc=choice.querySelector('strong + span');if(!strong||!desc)return;const badge=strong.querySelector('.choiceLevel'),name=strong.childNodes[0]?.textContent.trim(),rows=EFFECTS[name];if(!rows)return;const text=rows[levelIndex(badge?.textContent||'')];if(desc.textContent!==text)desc.textContent=text});
+}
 const panel=document.getElementById('panel');if(panel)new MutationObserver(apply).observe(panel,{childList:true,subtree:true});
 })();
