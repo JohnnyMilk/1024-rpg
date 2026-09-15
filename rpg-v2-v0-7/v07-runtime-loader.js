@@ -14,6 +14,10 @@ fetch('v07-bootstrap.js?v=20260915g').then(r=>{if(!r.ok)throw new Error('v07-boo
   const oldGuardText="祭司實際移動後，自己獲得守護，並從周圍 8 格內友方隨機選擇最多 3 名獲得守護；優先選擇目前沒有守護的友方。下一次受到傷害時傷害 -1，之後消耗。";
   const newGuardText="祭司實際移動後，從自己周圍 8 格內的友方單位中隨機選擇最多 3 名獲得守護，不包含祭司自己；優先選擇目前沒有守護的友方。下一次受到傷害時傷害 -1，之後消耗。";
   if(!code.includes(oldGuardText))throw new Error('找不到祭司守護 UI 說明片段');code=code.replace(oldGuardText,newGuardText);
-  (0,eval)(code+'\n//# sourceURL=rpg-v2-v0-7/v07-bootstrap-fixed.js');
+  /* B21: collapse is bound to the real Boss disappearing from formal combat, never to a debug damage button. */
+  const moveMarker="async function move(d){";
+  const lifecycle="window.addEventListener('v07-formal-boss-defeated',()=>{if(ROWS>4&&!bossCollapseStage){bossCollapseStage=1;bossCollapseFresh=true;bossWarningRow=ROWS-1;rebuildGrid();render()}});";
+  if(!code.includes(moveMarker))throw new Error('找不到 B21 Boss lifecycle 注入點');code=code.replace(moveMarker,lifecycle+moveMarker);
+  (0,eval)(code+'\n//# sourceURL=rpg-v2-v0-7/v07-bootstrap-fixed-b21.js');
 }).catch(e=>fail(e.message));
 })();
