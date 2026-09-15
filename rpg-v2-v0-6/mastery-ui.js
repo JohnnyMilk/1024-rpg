@@ -1,5 +1,5 @@
 (function(){'use strict';
-// Player-facing mastery text: reveal only the currently unlocked level.
+// One source of truth for player-facing mastery text. Gameplay surfaces reveal only current level.
 const EFFECTS={
 '橫掃':['隨機攻擊 1 個有效方向。','隨機攻擊 2 個有效方向。','隨機攻擊 3 個有效方向。','攻擊周圍 8 格全部敵人。'],
 '衝擊':['移動至少 2 格後，隨機攻擊周圍最多 1 名敵人。','移動至少 2 格後，隨機攻擊周圍最多 2 名敵人。','移動至少 2 格後，隨機攻擊周圍最多 3 名敵人。','移動至少 2 格後，隨機攻擊周圍最多 4 名敵人。'],
@@ -27,10 +27,8 @@ const EFFECTS={
 '援軍':['英雄生成時有 5% 機率額外生成 1 名相同英雄。','英雄生成時有 10% 機率額外生成 1 名相同英雄。','英雄生成時有 15% 機率額外生成 1 名相同英雄。','英雄生成時有 20% 機率額外生成 1 名相同英雄。']
 };
 function levelIndex(text=''){return text.includes('MAX')?3:text.includes('LV3')?2:text.includes('LV2')?1:0}
-function apply(){const panel=document.getElementById('panel');if(!panel)return;
-  const d=panel.querySelector('.detail');
-  if(d){const name=d.querySelector('h2')?.textContent.trim(),rows=EFFECTS[name];if(rows){const p=d.querySelector('p'),text=rows[levelIndex(d.querySelector('.detailLevel')?.textContent||'')];if(p&&p.textContent!==text)p.textContent=text}}
-  panel.querySelectorAll('.choice').forEach(choice=>{const strong=choice.querySelector('strong'),desc=choice.querySelector('strong + span');if(!strong||!desc)return;const badge=strong.querySelector('.choiceLevel'),name=strong.childNodes[0]?.textContent.trim(),rows=EFFECTS[name];if(!rows)return;const text=rows[levelIndex(badge?.textContent||'')];if(desc.textContent!==text)desc.textContent=text});
-}
+function description(name,level,fallback=''){let rows=EFFECTS[name];return rows?rows[levelIndex(level)]:fallback}
+window.RPGMasteryUI={EFFECTS,description};
+function apply(){const panel=document.getElementById('panel');if(!panel)return;const d=panel.querySelector('.detail');if(d){const name=d.querySelector('h2')?.textContent.trim(),p=d.querySelector('p'),text=description(name,d.querySelector('.detailLevel')?.textContent||'',p?.textContent||'');if(p&&p.textContent!==text)p.textContent=text}panel.querySelectorAll('.choice').forEach(choice=>{const strong=choice.querySelector('strong'),desc=choice.querySelector('strong + span');if(!strong||!desc)return;const badge=strong.querySelector('.choiceLevel'),name=strong.childNodes[0]?.textContent.trim(),text=description(name,badge?.textContent||'',desc.textContent);if(desc.textContent!==text)desc.textContent=text})}
 const panel=document.getElementById('panel');if(panel)new MutationObserver(apply).observe(panel,{childList:true,subtree:true});
 })();
