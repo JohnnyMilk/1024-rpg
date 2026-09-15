@@ -1,6 +1,6 @@
 # 1024 RPG — Version 2 v0.6 Final Rules
 
-Status: **FEATURE COMPLETE / FINAL TEST BUILD**. The remaining v0.6 work is gameplay and regression testing.
+Status: **COMPLETE / STABLE**. User gameplay testing is complete with no remaining known issues as of 2026-09-15.
 
 ## Type 01 innate merge abilities
 These are baseline Type 01 rules, not selectable skills and not mastery skills. Normal heroes and Special units both trigger them.
@@ -21,6 +21,17 @@ These are baseline Type 01 rules, not selectable skills and not mastery skills. 
 
 ### Five-merge ability
 Removed. There is no innate every-5-merges attack in v0.6.
+
+## Special Common Skills — final v0.6 pool
+Special Common Skills are fixed abilities and do **not** use mastery levels or appear in Game History mastery tracking.
+
+- **🌟 躍升 / Ascend:** when two Special units merge, the result gains two numeric tiers at once.
+- **👑 覺醒 / Awakening:** when every living friendly unit on the board is Special, all future hero spawns in that run are Special.
+- **♻️ 轉生 / Reincarnate:** the first eligible Special-unit death makes the next normal hero spawn Special; a reincarnated Special cannot trigger Reincarnate again.
+
+Removed from v0.6:
+- **🔁 連奏 / Encore** — removed because not every Special unit has a meaningful entry ability to repeat.
+- **🔗 連攜 / Linkage** — removed from the final Special Common Skill pool.
 
 ## General Skill — 波動共鳴
 `resonance` is no longer a merge-count skill. It triggers when an enemy dies, using the defeated enemy tile as the center.
@@ -45,4 +56,4 @@ Skill details reveal only the effect of the player's currently unlocked level. F
 - MAX Wave Resonance resolves chain reactions wave by wave so the sequence remains readable.
 
 ## v0.6 completion state
-Turn Engine, HP scaling, enemy scaling, profession rules, profession mastery, General Skill mastery, Type 01 merge attacks and Wave Resonance are now defined for v0.6. The next phase is testing and bug fixing rather than additional rule design.
+Turn Engine, HP scaling, enemy scaling, profession rules, profession mastery, General Skill mastery, Type 01 merge attacks, Wave Resonance and the final three-skill Special Common pool are complete. v0.6 is now the stable completed baseline for subsequent Version 2 development.
