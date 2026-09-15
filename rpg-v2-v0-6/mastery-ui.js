@@ -26,6 +26,6 @@ const EFFECTS={
 '強襲':['對 Boss 造成傷害時額外 +1。','對 Boss 造成傷害時額外 +2。','對 Boss 造成傷害時額外 +3。','對 Boss 造成傷害時額外 +4。'],
 '援軍':['英雄生成時有 5% 機率額外生成 1 名相同英雄。','英雄生成時有 10% 機率額外生成 1 名相同英雄。','英雄生成時有 15% 機率額外生成 1 名相同英雄。','英雄生成時有 20% 機率額外生成 1 名相同英雄。']
 };
-function apply(){const panel=document.getElementById('panel');if(!panel)return;const d=panel.querySelector('.detail');if(!d)return;const name=d.querySelector('h2')?.textContent.trim(),rows=EFFECTS[name];if(!rows)return;const levelText=d.querySelector('.detailLevel')?.textContent||'',idx=levelText.includes('MAX')?3:levelText.includes('LV3')?2:levelText.includes('LV2')?1:0,p=d.querySelector('p');if(p)p.textContent=rows[idx]}
-new MutationObserver(apply).observe(document.documentElement,{childList:true,subtree:true});
+function apply(){const panel=document.getElementById('panel');if(!panel)return;const d=panel.querySelector('.detail');if(!d)return;const name=d.querySelector('h2')?.textContent.trim(),rows=EFFECTS[name];if(!rows)return;const levelText=d.querySelector('.detailLevel')?.textContent||'',idx=levelText.includes('MAX')?3:levelText.includes('LV3')?2:levelText.includes('LV2')?1:0,p=d.querySelector('p');if(p&&p.textContent!==rows[idx])p.textContent=rows[idx]}
+const panel=document.getElementById('panel');if(panel)new MutationObserver(apply).observe(panel,{childList:true,subtree:true});
 })();
