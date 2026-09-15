@@ -10,12 +10,10 @@ fetch('v07-bootstrap.js?v=20260915g').then(r=>{if(!r.ok)throw new Error('v07-boo
   code=code.replace("bossCollapseStage++;bossCollapseFresh=true;bossWarningRow=ROWS-1;","bossCollapseStage++;bossCollapseFresh=false;bossWarningRow=ROWS-1;");
   const oldGuardRule="let grant=ally=>{let was=!!ally.guard;ally.guard=true;ally.guardBy=h.id;if(!was)ev.push({t:'buff',e:ally,text:'🛡️ 守護'})};grant(h);for(let ally of targets)grant(ally)";
   const newGuardRule="let grant=ally=>{let was=!!ally.guard;ally.guard=true;ally.guardBy=h.id;if(!was)ev.push({t:'buff',e:ally,text:'🛡️ 守護'})};for(let ally of targets)grant(ally)";
-  if(!code.includes(oldGuardRule))throw new Error('找不到祭司守護實際效果片段');
-  code=code.replace(oldGuardRule,newGuardRule);
+  if(!code.includes(oldGuardRule))throw new Error('找不到祭司守護實際效果片段');code=code.replace(oldGuardRule,newGuardRule);
   const oldGuardText="祭司實際移動後，自己獲得守護，並從周圍 8 格內友方隨機選擇最多 3 名獲得守護；優先選擇目前沒有守護的友方。下一次受到傷害時傷害 -1，之後消耗。";
   const newGuardText="祭司實際移動後，從自己周圍 8 格內的友方單位中隨機選擇最多 3 名獲得守護，不包含祭司自己；優先選擇目前沒有守護的友方。下一次受到傷害時傷害 -1，之後消耗。";
-  if(!code.includes(oldGuardText))throw new Error('找不到祭司守護 UI 說明片段');
-  code=code.replace(oldGuardText,newGuardText);
+  if(!code.includes(oldGuardText))throw new Error('找不到祭司守護 UI 說明片段');code=code.replace(oldGuardText,newGuardText);
   (0,eval)(code+'\n//# sourceURL=rpg-v2-v0-7/v07-bootstrap-fixed.js');
 }).catch(e=>fail(e.message));
 })();
