@@ -9,6 +9,7 @@ const patches=[
 ["maxHits:boss?bmax():1,damage:boss?bdmg():edmg()","maxHits:boss?bmax():enemyMax(),damage:boss?bdmg():edmg()"],
 ["let r=Math.min(nt,rem(o)+rem(h));ms.push(rec(h,sr,sc,o.r,o.c));o.tier=nt;o.hits=Math.max(0,nt-r);","let r=Math.min(heroMax(nt),rem(o)+rem(h));ms.push(rec(h,sr,sc,o.r,o.c));o.tier=nt;o.hits=Math.max(0,heroMax(nt)-r);"],
 ["tier:16,r:c.r,c:c.c,hits:13,special:false","tier:16,r:c.r,c:c.c,hits:2,special:false"],
+["};fireFarshot('rangerFarshot');if(hasClass('rangerQuickShot'))","};if(Math.random()<.50)fireFarshot('rangerFarshot');if(hasClass('rangerQuickShot'))"],
 ["window.__V2_TEST__={hv,max,rem,plan","window.__V2_TEST__={hv,heroMax,enemyMax,max,rem,plan"]
 ];
 for(const [from,to] of patches){if(!src.includes(from))throw new Error('找不到預期的 HP 程式片段');src=src.replace(from,to)}
