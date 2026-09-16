@@ -23,6 +23,13 @@ function v07CreateBossEngine(b){v07BossUnitId=b.id;v07WarningFresh=false;v07Boss
  must("async function enemyPhase(){let phase=await spawnEnemyPhase()","async function enemyPhase(){if(v07BossEngine&&v07BossEngine.state==='PLAYER_WARNING'){await v07BossEngine.enemyPhase();return}if(v07BossEngine&&v07BossEngine.state==='WARNING'){if(v07WarningFresh){v07WarningFresh=false;return}await v07BossEngine.afterPlayerPhase();await v07BossEngine.enemyPhase();return}let phase=await spawnEnemyPhase()",'collapse enemy phase');
  must("for(let i=0;i<bossKills;i++)if(profession)await chooseClassSkill();maybeAwaken();return true","for(let i=0;i<bossKills;i++)if(profession)await chooseClassSkill();if(bossKills&&v07BossEngine){v07BossDefeated+=bossKills;await v07BossEngine.beginDefeat();bossCollapseStage=0;bossCollapseFresh=false;v07WarningFresh=true}maybeAwaken();return true",'Boss reward/defeat');
  must("if(Math.random()<.50)fireFarshot('rangerFarshot')","if(Math.random()<.35)fireFarshot('rangerFarshot')",'Ranger farshot chance');
+ // V1.0 realtime history: persist each completed gameplay event immediately.
+ must("busy=true;moves++;score++;moveScore++;","busy=true;moves++;RPGSave.addStat('totalMoves',1);score++;moveScore++;",'history move');
+ must("for(let mid of ids){let h=E.find(x=>x.id===mid);if(!h)continue;merges++;","for(let mid of ids){let h=E.find(x=>x.id===mid);if(!h)continue;merges++;RPGSave.addStat('totalMerges',1);",'history merge');
+ must("if(e.type==='hero'){heroesLost++;deathCount++;","if(e.type==='hero'){heroesLost++;RPGSave.addStat('totalHeroesLost',1);deathCount++;",'history hero death');
+ must("if(e.type==='boss'){let gain=riskOn?200:100;","if(e.type==='boss'){RPGSave.addStat('totalBossKills',1);let gain=riskOn?200:100;",'history boss kill');
+ must("}else{let gain=riskOn?40:20;score+=gain;enemyScore+=gain}","}else{RPGSave.addStat('totalEnemiesKilled',1);let gain=riskOn?40:20;score+=gain;enemyScore+=gain}",'history enemy kill');
+ must("function render(){pieces.innerHTML='';","function render(){RPGSave.recordBestScore(score);pieces.innerHTML='';",'history best score');
  const reset="function reset(){ROWS=4;bossCollapseStage=0;bossWarningRow=-1;bossCollapseFresh=false;rebuildGrid();E=[];turn=0;";
  if(src.includes(reset))src=src.replace(reset,"function reset(){if(v07BossEngine)v07BossEngine.reset();v07BossEngine=null;v07BossUnitId=null;v07WarningFresh=false;v07BossDefeated=0;ROWS=4;bossCollapseStage=0;bossWarningRow=-1;bossCollapseFresh=false;rebuildGrid();E=[];turn=0;");
  return src;
