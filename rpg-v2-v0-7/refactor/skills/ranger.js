@@ -2,7 +2,7 @@
 class V07RangerSkills{
  constructor(runtime){this.r=runtime}
  bind(){this.r.events.on('PROFESSION_MOVE',e=>this.onMove(e));return this}
- has(id){return (this.r.config.preloadClassSkills||[]).includes(id)||(this.r.state.classSkills||[]).includes(id)}
+ has(id){return this.r.state.hasClassSkill(id)}
  opposite(dir){return({left:'right',right:'left',up:'down',down:'up'})[dir]}
  async hit(target,source,kind){if(!target)return false;await this.r.damage.apply(target,1,{source,kind});return true}
  async farshot(hero,count=1){const enemies=V07CombatTargeting.enemies(this.r.state);for(const t of V07CombatTargeting.farthest(hero,enemies,count))await this.hit(t,hero,'ranger-farshot')}
