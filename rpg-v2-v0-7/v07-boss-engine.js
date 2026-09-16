@@ -1,6 +1,6 @@
 (()=>{'use strict';
 class GiantElephantGuard{
- constructor(adapter={}){this.a=adapter;this.name='巨象守衛';this.icon='🗿';this.chargeCD=0;this.quakeCD=0;this.state='IDLE';this.defeatNoticeShown=false;this.collapseRows=0;this.defeatWatch=null;window.__v07BossEngine=this}
+ constructor(adapter={}){this.a=adapter;this.name='巨像守衛';this.icon='🗿';this.chargeCD=0;this.quakeCD=0;this.state='IDLE';this.defeatNoticeShown=false;this.collapseRows=0;this.defeatWatch=null;window.__v07BossEngine=this}
  emit(){window.dispatchEvent(new CustomEvent('v07-boss-state',{detail:{active:this.state==='ACTIVE',name:this.name,charge:this.chargeCD,quake:this.quakeCD,state:this.state}}))}
  reset(){this.stopDefeatWatch();this.chargeCD=0;this.quakeCD=0;this.state='IDLE';this.defeatNoticeShown=false;this.collapseRows=0;this.emit()}
  activate(){this.state='ACTIVE';this.chargeCD=0;this.quakeCD=0;this.defeatNoticeShown=false;this.startDefeatWatch();this.emit()}
