@@ -1,6 +1,6 @@
 (()=>{'use strict';
-const board=document.getElementById('board'),modal=document.getElementById('modal'),panel=document.getElementById('panel'),pieces=document.getElementById('pieces');
-if(!board||!modal||!panel||!pieces)return;
+const board=document.getElementById('board'),modal=document.getElementById('modal'),panel=document.getElementById('panel');
+if(!board||!modal||!panel)return;
 let state={active:false,charge:0,quake:0,name:'巨像守衛',state:'IDLE'};
 const hud=document.createElement('button');hud.id='v07BossHud';hud.className='v07BossHud';hud.type='button';hud.hidden=true;hud.innerHTML='<span class="v07BossHudIcon">🗿</span><span><b>巨像守衛</b><small>BOSS INFO</small></span>';board.parentNode.insertBefore(hud,board);
 const skillHud=document.getElementById('bossSkillHud'),chargeIcon=document.getElementById('bossChargeIcon'),quakeIcon=document.getElementById('bossQuakeIcon');
@@ -13,9 +13,6 @@ hud.onclick=showInfo;document.querySelectorAll('[data-boss-detail]').forEach(b=>
 function setCd(el,n){if(!el)return;const shade=el.querySelector('.bossCdShade');el.classList.toggle('cooling',n>0);el.classList.toggle('ready',n<=0);if(shade)shade.textContent=n>0?'CD '+n:''}
 function paint(){const active=state.state==='ACTIVE';hud.hidden=!active;if(skillHud)skillHud.hidden=!active;setCd(chargeIcon,Number(state.charge)||0);setCd(quakeIcon,Number(state.quake)||0)}
 window.addEventListener('v07-boss-state',e=>{state={...state,...e.detail};paint()});
-/* H6: UI is loaded last. It never creates/activates the engine and never changes game state. Identity is visual only; engine ownership remains in v07-b33-integration.js. */
-function paintIdentity(){const b=[...pieces.children].find(n=>n.classList.contains('boss'));if(!b)return;const icon=b.querySelector('.icon'),name=b.querySelector('.name');if(icon)icon.textContent='🗿';if(name)name.textContent='巨像守衛'}
-new MutationObserver(paintIdentity).observe(pieces,{childList:true,subtree:true});paintIdentity();
-/* If engine activated before this last-loaded UI attached its listener, synchronize once from the real engine. */
+/* H7: display-only UI. Never observes or mutates pieces; Boss identity belongs to runtime integration. */
 const eng=window.__v07BossEngine;if(eng){state={...state,active:eng.state==='ACTIVE',state:eng.state,name:eng.name,charge:eng.chargeCD,quake:eng.quakeCD};paint()}
 })();
