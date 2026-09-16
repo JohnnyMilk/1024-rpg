@@ -1,6 +1,6 @@
 (function(){'use strict';
 function patch(src){
- const must=(from,to,label)=>{if(!src.includes(from))throw new Error('B35-H4 '+label+' anchor missing');src=src.replace(from,to)};
+ const must=(from,to,label)=>{if(!src.includes(from))throw new Error('B35-H7 '+label+' anchor missing');src=src.replace(from,to)};
  const anchor="const anim=RPGAnimations.createAnimator({effects,step});";
  const integration=`const anim=RPGAnimations.createAnimator({effects,step});
 let v07BossEngine=null,v07BossUnitId=null,v07WarningFresh=false;
@@ -16,7 +16,7 @@ async function v07Notice(text,ms=3000){let x=anim.play('skill-tag',{text,duratio
 async function v07Collapse(){let row=ROWS-1,cells=[...grid.children].filter(x=>+x.dataset.r===row),doomed=E.filter(x=>x.r===row&&rem(x)>0),s=step();anim.play('skill-tag',{text:'⬇️ COLLAPSE · 警告格正在墜落'});for(let i=0;i<cells.length;i++){let x=cells[i];x.classList.remove('v07-warning');if(x.animate)x.animate([{opacity:1,transform:'none'},{opacity:.85,transform:'perspective(500px) rotateX(20deg) scale(.92)',offset:.35},{opacity:0,transform:'perspective(500px) translateY(90px) rotateX(72deg) rotateZ(18deg) scale(.18)'}],{duration:760,easing:'ease-in',fill:'forwards'});let u=doomed.find(e=>e.c===i);if(u){let pe=[...pieces.children].find(n=>String(n.dataset.id)===String(u.id));if(pe&&pe.animate)pe.animate([{opacity:1,transform:pe.style.transform},{opacity:0,transform:'translate('+(u.c*s)+'px,'+((u.r+1.2)*s)+'px) rotate(18deg) scale(.2)'}],{duration:760,easing:'ease-in',fill:'forwards'})}await wait(120)}await wait(820);for(let e of doomed){e.hits=max(e);e.noReviveFromCollapse=true}if(doomed.length)await settle([]);E=E.filter(x=>x.r!==row);ROWS--;bossWarningRow=-1;rebuildGrid();render()}
 function v07CreateBossEngine(b){v07BossUnitId=b.id;v07WarningFresh=false;v07BossEngine=new GiantElephantGuard({bossAlive:()=>!!v07BossUnit(),findChargeTarget:v07FindChargeTarget,hasAdjacentHero:()=>{let x=v07BossUnit();return !!x&&livingHeroes().some(h=>v07Near(x,h))},charge:v07Charge,quake:v07Quake,stomp:v07Stomp,notice:v07Notice,getRows:()=>ROWS,setWarningRow:r=>{bossWarningRow=r;rebuildGrid()},render,collapseBottomRow:v07Collapse});v07BossEngine.name='巨像守衛';v07BossEngine.activate();v07BossEngine.stopDefeatWatch()}`;
  must(anchor,integration,'engine scope');
- /* B35-H4: keep the exact B33 runtime-verified spawn lifecycle. UI must not own Boss creation. */
+ must("if(e.type==='boss')return '<div class=\"icon\">👑</div><div class=\"name\">Boss</div>'+healthBar(rem(e),e.maxHits,'boss','ATK '+e.damage);","if(e.type==='boss')return '<div class=\"icon\">🗿</div><div class=\"name\">巨像守衛</div>'+healthBar(rem(e),e.maxHits,'boss','ATK '+e.damage);",'Boss identity render');
  must("if(b){bactive=true;render();spawnFx(b);","if(b){bactive=true;v07CreateBossEngine(b);render();spawnFx(b);",'Boss spawn');
  const bossAct="let e=E.find(x=>x.id===eid);if(e&&rem(e)>0)await enemyAct(e);if(!livingHeroes().length)return}}";
  must(bossAct,"let e=E.find(x=>x.id===eid);if(e&&rem(e)>0){if(v07BossEngine&&v07BossUnitId===e.id)await v07BossEngine.takeTurn();else await enemyAct(e)}if(!livingHeroes().length)return}}",'Boss enemy phase');
