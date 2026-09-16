@@ -1,15 +1,11 @@
 (function(){'use strict';
 const bootError=document.getElementById('bootError');
-const fail=msg=>{console.error(msg);if(bootError){bootError.style.display='block';bootError.textContent='v0.7 B26 載入失敗：'+msg}};
+const fail=msg=>{console.error(msg);if(window.__v07Report)window.__v07Report('Loader · '+msg);else if(bootError){bootError.style.display='block';bootError.textContent='v0.7 B28 載入失敗：'+msg}};
 fetch('v07-bootstrap.js?v=20260915g').then(r=>{if(!r.ok)throw new Error('v07-bootstrap '+r.status);return r.text()}).then(code=>{
-  // B26 keeps the known-working B20/B23 loader structure. No code is inserted inside bootstrap's template literal.
   code=code.replace("rebuildGrid();anim.play('skill-tag',{text:'⚠️ BOSS APPROACH · 戰場擴張'});await wait(460);for(let u of E)u.r+=2;","let v07BossTag=anim.play('skill-tag',{text:'⚠️ BOSS APPROACH · 戰場即將擴張為 4×6',duration:3000});if(v07BossTag)v07BossTag.style.animationDuration='3000ms';await wait(3000);let v07ExpandOne=async()=>{ROWS++;for(let u of E)u.r++;board.style.transition='none';rebuildGrid();let v07Top=[...grid.children].filter(x=>+x.dataset.r===0);for(let x of v07Top)x.style.opacity='0';render();void board.offsetHeight;board.style.transition='';for(let x of v07Top){x.style.opacity='';if(x.animate)x.animate([{opacity:0,transform:'perspective(500px) translateY(90px) rotateX(72deg) rotateZ(18deg) scale(.18)'},{opacity:.85,transform:'perspective(500px) rotateX(20deg) scale(.92)',offset:.35},{opacity:1,transform:'none'}],{duration:760,easing:'ease-out',fill:'forwards'});await wait(120)}await wait(820)};ROWS=4;await v07ExpandOne();await v07ExpandOne();");
   code=code.replace("let bp=randomItem(empty().filter(x=>x[0]<2))||randomItem(empty());","let bp=randomItem(empty().filter(x=>x[0]===0))||randomItem(empty().filter(x=>x[0]<2))||randomItem(empty());");
-  // Patch the literal source-replacement statements in bootstrap itself, rather than injecting JS into its `patch` template.
-  const renderAnchor="src=src.replace(\"祭司實際移動後，自己與周圍 8 格內友方獲得守護；下一次受到傷害時傷害 -1，之後消耗。\"";
-  if(!code.includes(renderAnchor))throw new Error('B26 bootstrap runtime anchor missing');
-  const extraRuntimePatches="\nsrc=src.replace(\"if(e.type==='boss')return '<div class=\\\"icon\\\">👑</div><div class=\\\"name\\\">Boss</div>'+healthBar(rem(e),e.maxHits,'boss','ATK '+e.damage);\",\"if(e.type==='boss')return '<div class=\\\"icon\\\">🗿</div><div class=\\\"name\\\">巨象守衛</div>'+healthBar(rem(e),e.maxHits,'boss','ATK '+e.damage);\");\nsrc=src.replace(\"for(let i=0;i<bossKills;i++)if(profession)await chooseClassSkill();\",\"for(let i=0;i<bossKills;i++){}\");\n";
-  code=code.replace(renderAnchor,extraRuntimePatches+renderAnchor);
+  // B28 deliberately removes the B25/B26 nested Boss-render/reward injection that caused the blob syntax error.
+  // Keep only source transforms already proven syntactically safe in the B20/B23 loader.
   code=code.replaceAll('👑 巨象守門者','🗿 巨象守衛');
   code=code.replace("src=src.replace(\"bactive=false;next=turn+BI;bossKills++\",\"bactive=false;next=turn+BI;bossKills++;bossCollapseStage=1;bossCollapseFresh=true;bossWarningRow=ROWS-1;rebuildGrid();anim.play('skill-tag',{text:'⚠️ 戰場崩塌預警 · 裂痕格仍可使用'})\");","src=src.replace(\"bactive=false;next=turn+BI;bossKills++\",\"bactive=false;next=turn+BI;bossKills++;bossCollapseStage=1;bossCollapseFresh=true;bossWarningRow=ROWS-1\");src=src.replace(\"render();let ev=deathTriggerEvents(wave);\",\"render();if(bossCollapseStage===1&&bossWarningRow===ROWS-1){let v07DefeatTag=anim.play('skill-tag',{text:'⚠️ BOSS DEFEATED · 戰場即將崩落',duration:3000});if(v07DefeatTag)v07DefeatTag.style.animationDuration='3000ms';await wait(3000);rebuildGrid();render()}let ev=deathTriggerEvents(wave);\");");
   code=code.replace("anim.play('skill-tag',{text:'⚠️ 下一排龜裂 · 還有一次 Player Phase'})","void 0");
@@ -17,10 +13,10 @@ fetch('v07-bootstrap.js?v=20260915g').then(r=>{if(!r.ok)throw new Error('v07-boo
   code=code.replace("bossCollapseStage++;bossCollapseFresh=true;bossWarningRow=ROWS-1;","bossCollapseStage++;bossCollapseFresh=false;bossWarningRow=ROWS-1;");
   const oldGuardRule="let grant=ally=>{let was=!!ally.guard;ally.guard=true;ally.guardBy=h.id;if(!was)ev.push({t:'buff',e:ally,text:'🛡️ 守護'})};grant(h);for(let ally of targets)grant(ally)";
   const newGuardRule="let grant=ally=>{let was=!!ally.guard;ally.guard=true;ally.guardBy=h.id;if(!was)ev.push({t:'buff',e:ally,text:'🛡️ 守護'})};for(let ally of targets)grant(ally)";
-  if(!code.includes(oldGuardRule))throw new Error('B26 Priest guard anchor missing');code=code.replace(oldGuardRule,newGuardRule);
+  if(!code.includes(oldGuardRule))throw new Error('B28 Priest guard anchor missing');code=code.replace(oldGuardRule,newGuardRule);
   const oldGuardText="祭司實際移動後，自己獲得守護，並從周圍 8 格內友方隨機選擇最多 3 名獲得守護；優先選擇目前沒有守護的友方。下一次受到傷害時傷害 -1，之後消耗。";
   const newGuardText="祭司實際移動後，從自己周圍 8 格內的友方單位中隨機選擇最多 3 名獲得守護，不包含祭司自己；優先選擇目前沒有守護的友方。下一次受到傷害時傷害 -1，之後消耗。";
-  if(!code.includes(oldGuardText))throw new Error('B26 Priest guard UI anchor missing');code=code.replace(oldGuardText,newGuardText);
-  (0,eval)(code+'\n//# sourceURL=rpg-v2-v0-7/v07-bootstrap-fixed-b26.js');
+  if(!code.includes(oldGuardText))throw new Error('B28 Priest guard UI anchor missing');code=code.replace(oldGuardText,newGuardText);
+  (0,eval)(code+'\n//# sourceURL=rpg-v2-v0-7/v07-bootstrap-fixed-b28.js');
 }).catch(e=>fail(e.message));
 })();
