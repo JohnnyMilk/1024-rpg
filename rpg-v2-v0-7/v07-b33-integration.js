@@ -1,9 +1,9 @@
 (function(){'use strict';
 function patch(src){
- const must=(from,to,label)=>{if(!src.includes(from))throw new Error('B35-H7 '+label+' anchor missing');src=src.replace(from,to)};
+ const must=(from,to,label)=>{if(!src.includes(from))throw new Error('B35-H8 '+label+' anchor missing');src=src.replace(from,to)};
  const anchor="const anim=RPGAnimations.createAnimator({effects,step});";
  const integration=`const anim=RPGAnimations.createAnimator({effects,step});
-let v07BossEngine=null,v07BossUnitId=null,v07WarningFresh=false;
+let v07BossEngine=null,v07BossUnitId=null,v07WarningFresh=false,v07BossDefeated=0;
 const v07BossAnim=window.V07BossAnimations?V07BossAnimations.create({pieces,effects,step}):null;
 function v07BossUnit(){return E.find(e=>e.id===v07BossUnitId&&e.type==='boss'&&rem(e)>0)||null}
 function v07At(r,c,skip=null){return E.find(u=>u.id!==skip&&rem(u)>0&&u.r===r&&u.c===c)}
@@ -17,14 +17,14 @@ async function v07Collapse(){let row=ROWS-1,cells=[...grid.children].filter(x=>+
 function v07CreateBossEngine(b){v07BossUnitId=b.id;v07WarningFresh=false;v07BossEngine=new GiantElephantGuard({bossAlive:()=>!!v07BossUnit(),findChargeTarget:v07FindChargeTarget,hasAdjacentHero:()=>{let x=v07BossUnit();return !!x&&livingHeroes().some(h=>v07Near(x,h))},charge:v07Charge,quake:v07Quake,stomp:v07Stomp,notice:v07Notice,getRows:()=>ROWS,setWarningRow:r=>{bossWarningRow=r;rebuildGrid()},render,collapseBottomRow:v07Collapse});v07BossEngine.name='巨像守衛';v07BossEngine.activate();v07BossEngine.stopDefeatWatch()}`;
  must(anchor,integration,'engine scope');
  must("if(e.type==='boss')return '<div class=\"icon\">👑</div><div class=\"name\">Boss</div>'+healthBar(rem(e),e.maxHits,'boss','ATK '+e.damage);","if(e.type==='boss')return '<div class=\"icon\">🗿</div><div class=\"name\">巨像守衛</div>'+healthBar(rem(e),e.maxHits,'boss','ATK '+e.damage);",'Boss identity render');
- must("if(b){bactive=true;render();spawnFx(b);","if(b){bactive=true;v07CreateBossEngine(b);render();spawnFx(b);",'Boss spawn');
+ must("if(b){bactive=true;render();spawnFx(b);","if(b){b.maxHits=10+v07BossDefeated*5;b.hits=0;bactive=true;v07CreateBossEngine(b);render();spawnFx(b);",'Boss spawn');
  const bossAct="let e=E.find(x=>x.id===eid);if(e&&rem(e)>0)await enemyAct(e);if(!livingHeroes().length)return}}";
  must(bossAct,"let e=E.find(x=>x.id===eid);if(e&&rem(e)>0){if(v07BossEngine&&v07BossUnitId===e.id)await v07BossEngine.takeTurn();else await enemyAct(e)}if(!livingHeroes().length)return}}",'Boss enemy phase');
  must("async function enemyPhase(){let phase=await spawnEnemyPhase()","async function enemyPhase(){if(v07BossEngine&&v07BossEngine.state==='PLAYER_WARNING'){await v07BossEngine.enemyPhase();return}if(v07BossEngine&&v07BossEngine.state==='WARNING'){if(v07WarningFresh){v07WarningFresh=false;return}await v07BossEngine.afterPlayerPhase();await v07BossEngine.enemyPhase();return}let phase=await spawnEnemyPhase()",'collapse enemy phase');
- must("for(let i=0;i<bossKills;i++)if(profession)await chooseClassSkill();maybeAwaken();return true","for(let i=0;i<bossKills;i++)if(profession)await chooseClassSkill();if(bossKills&&v07BossEngine){await v07BossEngine.beginDefeat();bossCollapseStage=0;bossCollapseFresh=false;v07WarningFresh=true}maybeAwaken();return true",'Boss reward/defeat');
+ must("for(let i=0;i<bossKills;i++)if(profession)await chooseClassSkill();maybeAwaken();return true","for(let i=0;i<bossKills;i++)if(profession)await chooseClassSkill();if(bossKills&&v07BossEngine){v07BossDefeated+=bossKills;await v07BossEngine.beginDefeat();bossCollapseStage=0;bossCollapseFresh=false;v07WarningFresh=true}maybeAwaken();return true",'Boss reward/defeat');
  must("if(Math.random()<.50)fireFarshot('rangerFarshot')","if(Math.random()<.35)fireFarshot('rangerFarshot')",'Ranger farshot chance');
  const reset="function reset(){ROWS=4;bossCollapseStage=0;bossWarningRow=-1;bossCollapseFresh=false;rebuildGrid();E=[];turn=0;";
- if(src.includes(reset))src=src.replace(reset,"function reset(){if(v07BossEngine)v07BossEngine.reset();v07BossEngine=null;v07BossUnitId=null;v07WarningFresh=false;ROWS=4;bossCollapseStage=0;bossWarningRow=-1;bossCollapseFresh=false;rebuildGrid();E=[];turn=0;");
+ if(src.includes(reset))src=src.replace(reset,"function reset(){if(v07BossEngine)v07BossEngine.reset();v07BossEngine=null;v07BossUnitId=null;v07WarningFresh=false;v07BossDefeated=0;ROWS=4;bossCollapseStage=0;bossWarningRow=-1;bossCollapseFresh=false;rebuildGrid();E=[];turn=0;");
  return src;
 }
 window.V07B33={patch};
