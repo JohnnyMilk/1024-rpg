@@ -1,7 +1,7 @@
-name: v0.7 Refactor Self Check
+name: Shared Runtime Self Check
 on:
   push:
-    branches: [v07-refactor]
+    branches: [v07-refactor, v06-shared-core]
   workflow_dispatch:
 jobs:
   selfcheck:
@@ -11,10 +11,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Syntax check refactor modules
+      - name: Syntax check shared runtime modules
         shell: bash
         run: |
           set -e
           find rpg-v2-v0-7/refactor -name '*.js' -print0 | xargs -0 -n1 node --check
+          node --check rpg-v2-v0-6/shared-runtime-entry.js
+          node --check rpg-v2-v0-6/shared-runtime-node-check.js
       - name: Run v0.7 smoke tests
         run: node rpg-v2-v0-7/refactor/node-smoke-runner.js
+      - name: Run v0.6 shared core compatibility tests
+        run: node rpg-v2-v0-6/shared-runtime-node-check.js
