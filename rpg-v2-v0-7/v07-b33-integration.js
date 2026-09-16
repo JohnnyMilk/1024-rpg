@@ -1,10 +1,9 @@
 (function(){'use strict';
-/* B33: final-runtime Boss integration. GiantElephantGuard is the sole Boss lifecycle/CD state. */
 function patch(src){
  const must=(from,to,label)=>{if(!src.includes(from))throw new Error('B33 '+label+' anchor missing');src=src.replace(from,to)};
  const anchor="const anim=RPGAnimations.createAnimator({effects,step});";
  const integration=`const anim=RPGAnimations.createAnimator({effects,step});
-let v07BossEngine=null,v07BossUnitId=null;
+let v07BossEngine=null,v07BossUnitId=null,v07WarningFresh=false;
 const v07BossAnim=window.V07BossAnimations?V07BossAnimations.create({pieces,effects,step}):null;
 function v07BossUnit(){return E.find(e=>e.id===v07BossUnitId&&e.type==='boss'&&rem(e)>0)||null}
 function v07At(r,c,skip=null){return E.find(u=>u.id!==skip&&rem(u)>0&&u.r===r&&u.c===c)}
@@ -15,22 +14,15 @@ async function v07Quake(){let b=v07BossUnit();if(!b)return;let ts=livingHeroes()
 async function v07Stomp(){let b=v07BossUnit();if(!b)return;let h=livingHeroes().slice().sort((a,z)=>(Math.abs(a.r-b.r)+Math.abs(a.c-b.c))-(Math.abs(z.r-b.r)+Math.abs(z.c-b.c))||a.id-z.id)[0];if(!h)return;let dr=Math.sign(h.r-b.r),dc=Math.sign(h.c-b.c);if(Math.abs(h.r-b.r)>=Math.abs(h.c-b.c))dc=0;else dr=0;let nr=b.r+dr,nc=b.c+dc,o=(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS)?v07At(nr,nc,b.id):null;if(o&&o.type==='hero'){if(v07BossAnim)await v07BossAnim.stomp(b,o);let ev=[];hitHero(o,2,b,ev);if(ev.length)await settle(ev)}else if(!o&&nr>=0&&nr<ROWS&&nc>=0&&nc<COLS){let from={r:b.r,c:b.c},to={r:nr,c:nc};b.r=nr;b.c=nc;if(v07BossAnim)await v07BossAnim.moveUnit(b,from,to,430);render()}}
 async function v07Notice(text,ms=3000){let x=anim.play('skill-tag',{text,duration:ms});if(x)x.style.animationDuration=ms+'ms';await wait(ms)}
 async function v07Collapse(){let row=ROWS-1,cells=[...grid.children].filter(x=>+x.dataset.r===row),doomed=E.filter(x=>x.r===row&&rem(x)>0),s=step();anim.play('skill-tag',{text:'⬇️ COLLAPSE · 警告格正在墜落'});for(let i=0;i<cells.length;i++){let x=cells[i];x.classList.remove('v07-warning');if(x.animate)x.animate([{opacity:1,transform:'none'},{opacity:.85,transform:'perspective(500px) rotateX(20deg) scale(.92)',offset:.35},{opacity:0,transform:'perspective(500px) translateY(90px) rotateX(72deg) rotateZ(18deg) scale(.18)'}],{duration:760,easing:'ease-in',fill:'forwards'});let u=doomed.find(e=>e.c===i);if(u){let pe=pieces.querySelector('[data-id='+u.id+']');if(pe&&pe.animate)pe.animate([{opacity:1,transform:pe.style.transform},{opacity:0,transform:'translate('+(u.c*s)+'px,'+((u.r+1.2)*s)+'px) rotate(18deg) scale(.2)'}],{duration:760,easing:'ease-in',fill:'forwards'})}await wait(120)}await wait(820);for(let e of doomed){e.hits=max(e);e.noReviveFromCollapse=true}if(doomed.length)await settle([]);E=E.filter(x=>x.r!==row);ROWS--;bossWarningRow=-1;rebuildGrid();render()}
-function v07CreateBossEngine(b){v07BossUnitId=b.id;v07BossEngine=new GiantElephantGuard({bossAlive:()=>!!v07BossUnit(),findChargeTarget:v07FindChargeTarget,hasAdjacentHero:()=>{let x=v07BossUnit();return !!x&&livingHeroes().some(h=>v07Near(x,h))},charge:v07Charge,quake:v07Quake,stomp:v07Stomp,notice:v07Notice,getRows:()=>ROWS,setWarningRow:r=>{bossWarningRow=r;rebuildGrid()},render,collapseBottomRow:v07Collapse});v07BossEngine.name='巨像守衛';v07BossEngine.activate();v07BossEngine.stopDefeatWatch()}`;
+function v07CreateBossEngine(b){v07BossUnitId=b.id;v07WarningFresh=false;v07BossEngine=new GiantElephantGuard({bossAlive:()=>!!v07BossUnit(),findChargeTarget:v07FindChargeTarget,hasAdjacentHero:()=>{let x=v07BossUnit();return !!x&&livingHeroes().some(h=>v07Near(x,h))},charge:v07Charge,quake:v07Quake,stomp:v07Stomp,notice:v07Notice,getRows:()=>ROWS,setWarningRow:r=>{bossWarningRow=r;rebuildGrid()},render,collapseBottomRow:v07Collapse});v07BossEngine.name='巨像守衛';v07BossEngine.activate();v07BossEngine.stopDefeatWatch()}`;
  must(anchor,integration,'engine scope');
  must("if(b){bactive=true;render();spawnFx(b);","if(b){bactive=true;v07CreateBossEngine(b);render();spawnFx(b);",'Boss spawn');
  const bossAct="let e=E.find(x=>x.id===eid);if(e&&rem(e)>0)await enemyAct(e);if(!livingHeroes().length)return}}";
  must(bossAct,"let e=E.find(x=>x.id===eid);if(e&&rem(e)>0){if(v07BossEngine&&v07BossUnitId===e.id)await v07BossEngine.takeTurn();else await enemyAct(e)}if(!livingHeroes().length)return}}",'Boss enemy phase');
- must("async function enemyPhase(){let phase=await spawnEnemyPhase()","async function enemyPhase(){if(v07BossEngine&&v07BossEngine.state==='PLAYER_WARNING'){await v07BossEngine.enemyPhase();return}let phase=await spawnEnemyPhase()",'collapse enemy phase');
- must("for(let i=0;i<bossKills;i++)if(profession)await chooseClassSkill();maybeAwaken();return true","for(let i=0;i<bossKills;i++)if(profession)await chooseClassSkill();if(bossKills&&v07BossEngine)await v07BossEngine.beginDefeat();maybeAwaken();return true",'Boss reward/defeat');
- // Patch the actual final move() structurally. B32 may already have rewritten the text between render() and the next hero-alive check, so do not depend on that old string.
- const moveStart=src.indexOf("async function move(d){"),moveEnd=src.indexOf("function reset(){",moveStart);
- if(moveStart<0||moveEnd<0)throw new Error('B33 move function boundary missing');
- let moveSrc=src.slice(moveStart,moveEnd),phaseStart=moveSrc.indexOf("turn++;render();"),phaseEnd=moveSrc.indexOf("if(!livingHeroes().length){check();busy=false;return}",phaseStart);
- if(phaseStart<0||phaseEnd<0)throw new Error('B33 move phase boundary missing');
- moveSrc=moveSrc.slice(0,phaseStart)+"turn++;render();if(v07BossEngine&&v07BossEngine.state==='WARNING')await v07BossEngine.afterPlayerPhase();await enemyPhase();"+moveSrc.slice(phaseEnd);
- src=src.slice(0,moveStart)+moveSrc+src.slice(moveEnd);
+ must("async function enemyPhase(){let phase=await spawnEnemyPhase()","async function enemyPhase(){if(v07BossEngine&&v07BossEngine.state==='PLAYER_WARNING'){await v07BossEngine.enemyPhase();return}if(v07BossEngine&&v07BossEngine.state==='WARNING'){if(v07WarningFresh){v07WarningFresh=false;return}await v07BossEngine.afterPlayerPhase();await v07BossEngine.enemyPhase();return}let phase=await spawnEnemyPhase()",'collapse enemy phase');
+ must("for(let i=0;i<bossKills;i++)if(profession)await chooseClassSkill();maybeAwaken();return true","for(let i=0;i<bossKills;i++)if(profession)await chooseClassSkill();if(bossKills&&v07BossEngine){await v07BossEngine.beginDefeat();bossCollapseStage=0;bossCollapseFresh=false;v07WarningFresh=true}maybeAwaken();return true",'Boss reward/defeat');
  const reset="function reset(){ROWS=4;bossCollapseStage=0;bossWarningRow=-1;bossCollapseFresh=false;rebuildGrid();E=[];turn=0;";
- if(src.includes(reset))src=src.replace(reset,"function reset(){if(v07BossEngine)v07BossEngine.reset();v07BossEngine=null;v07BossUnitId=null;ROWS=4;bossCollapseStage=0;bossWarningRow=-1;bossCollapseFresh=false;rebuildGrid();E=[];turn=0;");
+ if(src.includes(reset))src=src.replace(reset,"function reset(){if(v07BossEngine)v07BossEngine.reset();v07BossEngine=null;v07BossUnitId=null;v07WarningFresh=false;ROWS=4;bossCollapseStage=0;bossWarningRow=-1;bossCollapseFresh=false;rebuildGrid();E=[];turn=0;");
  return src;
 }
 window.V07B33={patch};
