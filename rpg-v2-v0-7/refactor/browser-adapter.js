@@ -1,0 +1,27 @@
+(()=>{'use strict';
+const $=id=>document.getElementById(id);
+class V07BrowserAdapter{
+ constructor(){this.runtime=null;this.config=null;this.board=$('board');this.grid=$('grid');this.pieces=$('pieces');this.effects=$('effects');this.noticeEl=$('bossNotice')||null}
+ attach(runtime){this.runtime=runtime;return this}
+ async boot(state,config,runtime){this.attach(runtime);this.config=config;this.buildGrid(state);if(config.preloadHeroes)for(const h of config.preloadHeroes)runtime.spawns.enqueue({type:'hero',...h});else if(!state.units.length){runtime.spawns.enqueue({type:'hero',tier:2});runtime.spawns.enqueue({type:'hero',tier:2})}await runtime.spawns.settle();this.bindInput();this.render(state)}
+ buildGrid(state){if(!this.grid)return;this.grid.innerHTML='';for(let i=0;i<state.rows*state.cols;i++){const d=document.createElement('div');d.className='cell';this.grid.appendChild(d)}if(this.board)this.board.style.setProperty('--v07-rows',state.rows)}
+ step(state){const width=this.pieces?.clientWidth||this.board?.clientWidth||320;return(width-24)/state.cols+8}
+ heroValue(h){return Math.max(1,(h.tier||2)/2)}
+ render(state){this.buildGrid(state);if(!this.pieces)return;this.pieces.innerHTML='';const step=this.step(state);for(const u of state.units.filter(x=>!x.dead)){const d=document.createElement('div');d.className='piece '+(u.type==='hero'?'heroUnit'+(u.special?' specialUnit role-'+u.profession:''):u.type==='boss'?'boss':'enemy');d.dataset.id=u.id;d.style.transform=`translate(${u.c*step}px,${u.r*step}px)`;if(u.type==='hero')d.innerHTML=`${u.special?'<div class="classBadge">'+({warrior:'⚔️',ranger:'🏹',priest:'✨'}[u.profession]||'✦')+'</div>':''}${u.guard?'<div class="guardBadge">🛡️</div>':''}<div class="heroNum">${this.heroValue(u)}</div>`;else if(u.type==='boss')d.innerHTML='<div class="icon">🗿</div><div class="name">巨象守衛</div>';else d.innerHTML='<div class="icon">🥷</div><div class="name">暗影刺客</div>';this.pieces.appendChild(d)}if($('turn'))$('turn').textContent=state.turn;if($('merges'))$('merges').textContent=state.merges;if($('profession'))$('profession').textContent=state.profession?({warrior:'⚔️ 戰士',ranger:'🏹 遊俠',priest:'✨ 祭司'}[state.profession]||state.profession):'未選擇';if(this.board)this.board.dataset.warningRow=state.warningRow>=0?String(state.warningRow):''}
+ bindInput(){if(this._bound||!this.board)return;this._bound=true;let sx=0,sy=0;const start=e=>{const p=e.touches?.[0]||e;sx=p.clientX;sy=p.clientY},end=e=>{const p=e.changedTouches?.[0]||e,dx=p.clientX-sx,dy=p.clientY-sy;if(Math.max(Math.abs(dx),Math.abs(dy))<24)return;const dir=Math.abs(dx)>Math.abs(dy)?(dx>0?'right':'left'):(dy>0?'down':'up');this.runtime?.playerAction(dir)};this.board.addEventListener('touchstart',start,{passive:true});this.board.addEventListener('touchend',end,{passive:true});this.board.addEventListener('pointerdown',start);this.board.addEventListener('pointerup',end)}
+ async animateMove(){return true}
+ async expandRows(){return true}
+ async collapseBottomRow(){return true}
+ setWarningRow(){return true}
+ async notice(text){if(this.noticeEl){this.noticeEl.textContent=text;return true}return true}
+ skillRank(id){return window.RPGSave?.rankFromUses&&window.RPGSave?.uses?RPGSave.rankFromUses(RPGSave.uses(id)):'LV1'}
+ bossUnit(){return this.runtime?.state.units.find(u=>u.type==='boss'&&!u.dead)||null}
+ bossGameAdapter(state,runtime){const self=this;return{rows:()=>state.rows,bossUnit:()=>self.bossUnit(),bossAlive:()=>runtime.units.alive(self.bossUnit()),spawnBossUnit:def=>runtime.spawn.boss({maxHits:10,damage:1,bossId:def.id,name:def.name,icon:def.icon}),findChargeTarget:()=>self.findChargeTarget(),hasAdjacentHero:()=>self.hasAdjacentHero(),charge:line=>self.charge(line),quake:()=>self.quake(),stomp:()=>self.stomp()}}
+ findChargeTarget(){const b=this.bossUnit();if(!b)return null;const hs=this.runtime.state.living('hero');for(const h of hs){if(h.r!==b.r&&h.c!==b.c)continue;const dr=Math.sign(h.r-b.r),dc=Math.sign(h.c-b.c);let r=b.r+dr,c=b.c+dc,clear=true;while(r!==h.r||c!==h.c){if(this.runtime.board.at(r,c)){clear=false;break}r+=dr;c+=dc}if(clear)return{hero:h,dr,dc}}return null}
+ hasAdjacentHero(){const b=this.bossUnit();return !!b&&V07CombatTargeting.around8(b,this.runtime.state.living('hero')).length>0}
+ async charge(line){const b=this.bossUnit();if(!b||!line)return false;for(let i=0;i<2;i++){const nr=b.r+line.dr,nc=b.c+line.dc;if(!this.runtime.board.inBounds(nr,nc))break;const hit=this.runtime.board.at(nr,nc,b.id);if(hit){if(hit.type==='hero')await this.runtime.damage.apply(hit,1,{source:b,kind:'boss-charge'});break}b.r=nr;b.c=nc}return true}
+ async quake(){const b=this.bossUnit();if(!b)return false;for(const h of V07CombatTargeting.around8(b,this.runtime.state.living('hero')))await this.runtime.damage.apply(h,1,{source:b,kind:'boss-quake'});return true}
+ async stomp(){const b=this.bossUnit(),hs=this.runtime.state.living('hero');if(!b||!hs.length)return false;const h=V07CombatTargeting.nearest(b,hs,1)[0],dr=Math.sign(h.r-b.r),dc=Math.sign(h.c-b.c);if(V07CombatTargeting.distance(b,h)===1){await this.runtime.damage.apply(h,2,{source:b,kind:'boss-stomp'});return true}const nr=b.r+(Math.abs(h.r-b.r)>=Math.abs(h.c-b.c)?dr:0),nc=b.c+(Math.abs(h.r-b.r)<Math.abs(h.c-b.c)?dc:0);if(this.runtime.board.inBounds(nr,nc)&&!this.runtime.board.at(nr,nc,b.id)){b.r=nr;b.c=nc}return true}
+}
+window.V07BrowserAdapter=V07BrowserAdapter;
+})();
