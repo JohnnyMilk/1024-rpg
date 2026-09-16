@@ -1,4 +1,13 @@
 (()=>{'use strict';
 function assert(ok,msg){if(!ok)throw new Error('[V07 REFACTOR TEST] '+msg);console.log('[V07 REFACTOR TEST] PASS '+msg)}
-window.V07RunSmokeTests=async function(){assert(!!window.V07GameConfig,'game config loaded');assert(!!window.V07TurnManager,'turn manager loaded');assert(!!window.V07MapEventManager,'map event manager loaded');assert(!!window.V07Bosses?.has('giant-elephant-guard'),'Giant Elephant Guard registered');assert(window.V07PriestRules?.guard.excludeSelf===true,'Priest Guard excludes self');assert(window.V07PriestRules?.guard.maxTargets===3,'Priest Guard max 3 allies');const phases=[];const tm=new V07TurnManager({playerPhase:async()=>phases.push('PLAYER'),enemyPhase:async()=>phases.push('ENEMY'),mapEventPhase:async()=>phases.push('MAP_EVENT'),trace:()=>{}});await tm.runPlayerAction('left');assert(phases.join('>')==='PLAYER>ENEMY>MAP_EVENT','phase order Player > Enemy > Map Event');console.log('[V07 REFACTOR TEST] ALL PASS');return true};
+window.V07RunSmokeTests=async function(){
+ assert(!!window.V07GameConfig,'game config loaded');assert(!!window.V07TurnManager,'turn manager loaded');assert(!!window.V07MapEventManager,'map event manager loaded');
+ assert(typeof window.V07BaseBoss==='function','BaseBoss loaded');assert(!!window.V07Bosses?.has('giant-elephant-guard'),'Giant Elephant Guard registered');
+ const BossClass=window.V07Bosses.get('giant-elephant-guard');assert(BossClass.prototype instanceof V07BaseBoss,'Giant Elephant Guard inherits BaseBoss');
+ assert(typeof window.V07GiantElephantTemplateBoss==='function','Giant Elephant template Boss loaded');assert(V07GiantElephantTemplateBoss.prototype instanceof GiantElephantGuard,'future template inherits Giant Elephant Guard behavior');
+ assert(window.V07PriestRules?.guard.excludeSelf===true,'Priest Guard excludes self');assert(window.V07PriestRules?.guard.maxTargets===3,'Priest Guard max 3 allies');
+ const phases=[];const tm=new V07TurnManager({playerPhase:async()=>phases.push('PLAYER'),enemyPhase:async()=>phases.push('ENEMY'),mapEventPhase:async()=>phases.push('MAP_EVENT'),trace:()=>{}});await tm.runPlayerAction('left');assert(phases.join('>')==='PLAYER>ENEMY>MAP_EVENT','phase order Player > Enemy > Map Event');
+ const queued=[];const fakeGame={bossAlive:()=>true,findChargeTarget:()=>({dir:'left'}),charge:async()=>{},hasAdjacentHero:()=>false,quake:async()=>{},stomp:async()=>{},rows:()=>6};const boss=window.V07Bosses.create('giant-elephant-guard',{game:fakeGame,mapEvents:{enqueue:e=>queued.push(e)}});assert(boss instanceof V07BaseBoss,'registry creates BaseBoss instance');await boss.takeTurn();assert(boss.getCooldown('charge')===3,'Boss charge cooldown owned by Boss instance');await boss.onDefeated();assert(queued[0]?.type==='collapse'&&queued[0]?.rows===2,'Boss defeat queues 6→4 collapse event');
+ console.log('[V07 REFACTOR TEST] ALL PASS');return true;
+};
 })();
