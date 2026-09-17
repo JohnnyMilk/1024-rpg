@@ -1,24 +1,55 @@
 # 1024 RPG — Type 02 Design Notes
 
 ## Status
-**CONCEPT / NOT FINAL**
+**CONCEPT / POC TESTING — NOT FINAL**
 
-Type 02 is the next major 1024 game type after Type 01 completion. Nothing in this document should be treated as locked gameplay unless explicitly marked as decided later.
+Type 02 is the next major 1024 game type after Type 01 completion. The current city / management direction is now being tested through a first playable POC. Nothing in this document should be treated as locked gameplay unless explicitly marked as decided later.
 
 ## Current direction
 The first concept direction is a **city / management simulation built around 1024-style merging**.
 
-The important distinction from Type 01 is that the 4×4 board would no longer be the entire game world. It may become the player's **planning / construction / decision area**, while another part of the screen shows the simulated city or operation as a visible result of those decisions.
+The important distinction from Type 01 is that the 4×4 board is no longer the entire game world. It is being tested as the player's **planning / construction / decision area**, while another part of the screen shows the simulated city as a visible result of those decisions.
 
 Working design idea:
 
 > **4×4 board = decisions**  
 > **Simulation view = results**
 
-This is intentionally exploratory. The final Type 02 may change the board size, controls, resources, simulation model or theme.
+## Version 1 · v0.1 POC — 2026-09-17
+Status: **PLAYABLE PROOF OF CONCEPT / TESTING**
+
+Path: `type-02-v1-v0-1/`
+
+The purpose of v0.1 is not balance or final rules. It tests whether a 1024 planning board and a visible management simulation can feel like one coherent game.
+
+Implemented in the POC:
+- 4×4 swipe board with touch and keyboard controls.
+- Four building families: Residential, Industry / Commerce, Energy / Infrastructure, Public / Environment.
+- Only buildings of the same family and same level merge.
+- A valid board movement advances the simulation by one day.
+- A new Level 1 building is generated after each valid movement.
+- Population, Finance, Energy and Happiness are live management meters.
+- The meters are linked: housing creates population and demand; industry creates jobs/income; energy creates supply; public development improves happiness but adds cost.
+- A separate LIVE CITY panel visualizes the accumulated city using buildings, traffic and pedestrians.
+- The city classification changes as population grows.
+- City log gives lightweight feedback on merges, energy pressure, employment pressure and satisfaction.
+- A management event appears every 7 days and presents two choices with economic / happiness consequences.
+- Board lock ends the POC run.
+- Reset is available for repeated testing.
+
+### v0.1 deliberate simplifications
+- No save system yet.
+- No formal victory condition.
+- No fixed run length.
+- No meta-progression.
+- The LIVE CITY is a visual representation of the board totals, not a second spatial simulation grid.
+- Building balance, spawn probabilities and formulas are provisional.
+- Events are deliberately few and simple.
+
+These limitations are intentional: v0.1 exists to test the core feeling before expanding systems.
 
 ## Concept: merge a city instead of heroes
-Instead of merging hero numbers, the player could merge buildings or facilities.
+Instead of merging hero numbers, the player merges buildings or facilities.
 
 Example residential chain:
 
@@ -31,92 +62,57 @@ Example residential chain:
 
 Two matching buildings merge into the next level, preserving the familiar 1024 progression while giving the merged object a simulation meaning.
 
-## Possible building families
-These are examples only and are **not finalized**.
-
+## Building families under test
 ### Residential
 Supports population and housing capacity.
 
 ### Industry / Commerce
-Creates jobs, production or income, but may create costs or negative externalities.
+Creates jobs and income, with higher infrastructure demand.
 
 ### Energy / Infrastructure
-Provides power or other capacity needed for the city to function.
+Provides power capacity needed for the city to function.
 
 ### Public / Environment
-Improves happiness, quality of life or city stability, but may consume money without directly generating revenue.
-
-Different families could have separate merge chains so the player must decide what kind of city to build rather than simply chase the largest number.
+Improves happiness and quality of life, with maintenance cost.
 
 ## Simulation layer
-Type 02 should explore a visible simulation area outside the 4×4 board. This area could show the city growing and changing as the player's board decisions take effect.
-
-Possible visual results:
-- buildings appearing or upgrading;
-- population/activity increasing;
-- traffic or citizens moving;
-- industrial activity;
-- lights / power state;
-- parks and public spaces;
-- visual signs of prosperity, congestion or failure.
+Type 02 explores a visible simulation area outside the 4×4 board. In v0.1 it shows buildings, population activity and traffic as a visual result of the current planning board.
 
 The purpose is to make the player feel that the 1024 board is **causing something to happen**, rather than being the complete presentation by itself.
 
-## Possible turn / time model
-One possible structure is:
+## Turn / time model under test
+v0.1 currently uses:
 
-> **Swipe / Build → Simulate → Resolve resources → Event → Next day**
+> **Valid Swipe / Build → Simulate → Resolve resources → Event when due → Next day**
 
-A valid 1024 action could advance the simulation by one day or one time unit. This would give every swipe an economic consequence.
+An invalid swipe does not advance time.
 
-A possible run structure could be a finite city-management challenge, for example around 100 simulation days, but **run length is not decided**.
-
-## Management meters
-Simulation gameplay should include a small number of important meters that pull against each other. Initial candidates:
-
+## Management meters under test
 ### Population
-Needs housing, jobs and services. Population growth may increase both opportunity and demand.
+Driven mainly by residential capacity and supported by employment.
 
 ### Finance
-Income funds construction and maintenance. A city can grow quickly but become financially unstable.
+Industry and population generate income; developed city systems create costs.
 
 ### Energy
-Buildings consume power. Insufficient capacity can reduce efficiency or shut systems down.
+Energy buildings provide supply while residential, industry and public buildings create demand.
 
 ### Happiness
-Affected by housing, jobs, environment, public facilities, pollution, events and shortages.
+Affected by public development, industry pressure, employment and energy conditions.
 
-These four are a starting point, not a final list. The goal is to create **trade-offs**, not a dashboard full of independent numbers.
-
-## Example management tensions
-- Too much housing → population rises faster than jobs or infrastructure.
-- More industry → better income / employment but potentially lower happiness or higher energy demand.
-- More parks / public facilities → higher happiness but additional financial cost.
-- Insufficient energy → city efficiency drops or buildings stop operating.
-
-The interesting decision should be **what to merge and develop now**, based on the current condition of the simulation.
+The goal is to create **trade-offs**, not a dashboard full of independent numbers.
 
 ## Events
-Type 02 could include city or management events between simulation steps.
-
-Example:
-
-**Spring Festival**
-- Hold festival → Happiness +10 / Finance -200
-- Cancel → preserve money / Happiness -5
-
-Events can create short-term decisions that interact with the long-term city build.
+v0.1 includes lightweight city events every seven days. Current examples include a weekend market, power-grid maintenance and urban greening proposals. Event content and timing are provisional.
 
 ## Possible overall format
-A promising early format is a **short-session city-management roguelite / simulation run** rather than an endless full SimCity clone.
+A promising direction remains a **short-session city-management roguelite / simulation run** rather than a full SimCity clone.
 
 Possible loop:
 
 > **Build → Simulate → Adapt → Event → Build again**
 
-A run could eventually be evaluated using population, finance, happiness, city development or other objectives.
-
-This is only a prototype direction. Victory conditions, failure conditions and meta-progression are still open questions.
+Victory conditions, failure conditions, scenario objectives and meta-progression remain open.
 
 ## Design principles for Type 02
 1. It must feel fundamentally different from Type 01.
@@ -125,21 +121,21 @@ This is only a prototype direction. Victory conditions, failure conditions and m
 4. Players should be able to **see the result** of their management decisions.
 5. Meters should interact and create trade-offs.
 6. Do not build a full city simulator before proving the core loop.
-7. Start with an MVP prototype and expand only after the loop is fun.
+7. Start with an MVP / POC and expand only after the loop is fun.
 
-## Open questions
+## Open questions after v0.1
 - Is 4×4 still the best planning-board size?
-- Does every valid swipe advance one day?
-- How are new building tiles generated?
-- Can different building categories merge only with their own category?
-- Is the simulation city spatially meaningful or mainly a visual representation of accumulated results?
-- Is Type 02 a city simulator specifically, or should the same system support other management themes later?
-- What causes a run to end?
+- Does one valid swipe = one day feel natural in play?
+- Are four building families enough, too many or too few?
+- Should new building generation remain random or become a management choice?
+- Should the LIVE CITY become a spatial simulation rather than a visualization?
+- What causes a run to end beyond board lock?
 - Is there a win condition, score target, survival target or scenario objective?
 - How much randomness should come from events versus tile generation?
-- Should the player be able to directly intervene in the simulation view, or only through the 1024 board?
+- Should the player be able to directly intervene in the simulation view?
+- Should Type 02 remain specifically city-themed or eventually support other management scenarios?
 
 ## Current working label
-**TYPE 02 — CITY / MANAGEMENT SIMULATION PROTOTYPE**
+**TYPE 02 — CITY / MANAGEMENT SIMULATION**
 
-No final game title has been selected.
+No final game title has been selected. `1024 CITY` is used only as the v0.1 POC display name.
