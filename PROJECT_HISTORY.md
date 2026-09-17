@@ -1,9 +1,9 @@
 # 1024 RPG Project History
 
 ## Project status — 2026-09-17
-**TYPE 01 DEVELOPMENT COMPLETE. TYPE 02 VERSION 1 v0.3 POC ACTIVE.**
+**TYPE 01 DEVELOPMENT COMPLETE. TYPE 01 VERSION 2 V1.1 FINAL OFFICIAL. TYPE 02 VERSION 1 v0.3 POC ACTIVE.**
 
-Type 01 is formally closed after completing Version 1 and Version 2 V1.0. Version 2 V1.0 remains the primary final Type 01 work. No Type 01 Version 3 is planned.
+Type 01 is formally closed after completing Version 1 and Version 2 V1.1. Version 2 V1.1 is the current final Type 01 work. V1.0 is retained as a frozen archive and gameplay-rule baseline. No Type 01 Version 3 is planned.
 
 Type 02 is a fundamentally different 1024 game type. Its active direction is City / Management, explored through independent playable POCs.
 
@@ -13,7 +13,8 @@ Type 02 is a fundamentally different 1024 game type. Its active direction is Cit
 - `type-01/` — Type 01 Version 1 history.
 - `rpg-v1-0/` — Type 01 Version 1 final release; frozen.
 - `type-01-v2/` — Type 01 Version 2 release/history entrance.
-- `rpg-v2-v1-0/` — Type 01 Version 2 V1.0 formal release; primary final Type 01 work.
+- `rpg-v2-v1-1/` — **Type 01 Version 2 V1.1 final official release.**
+- `rpg-v2-v1-0/` — Type 01 Version 2 V1.0 formal release; **frozen archive / gameplay baseline.**
 - `type-02/` — Type 02 planning page.
 - `type-02/TYPE02_DESIGN.md` — canonical Type 02 design notes.
 - `type-02-v1-v0-1/` — Type 02 v0.1 archived POC.
@@ -21,15 +22,31 @@ Type 02 is a fundamentally different 1024 game type. Its active direction is Cit
 - `type-02-v1-v0-3/` — **Type 02 v0.3 current playable POC.**
 
 ## Type 01 final state
-Status: **COMPLETE / FINAL / FROZEN**.
+Status: **COMPLETE / FINAL / FROZEN AFTER V1.1.**
 
 ### Version 1
 First completed Board Party Combat generation: 4×4 hero merging, shadow enemies, Boss progression and formal scoring.
 
-### Version 2 · V1.0
-Type 01's primary final work: Special Classes/Units, mastery, Shadow Assassin, Giant Elephant Guard, dynamic Boss battlefield, Game History persistence and final presentation/UI.
+### Version 2 · V1.0 — FROZEN ARCHIVE
+First formal Version 2 release and gameplay-rule baseline: Special Classes/Units, mastery, Shadow Assassin, Giant Elephant Guard, dynamic Boss battlefield, Game History persistence and final presentation/UI.
 
-B36/v0.7 and all earlier v0.x builds are historical archives. Type 01 files should only receive explicit maintenance/regression fixes.
+V1.0 is frozen after V1.1 release. Do not modify it unless the archive policy is explicitly reversed.
+
+### Version 2 · V1.1 — FINAL OFFICIAL
+V1.1 is an **UI-only mobile release**. Gameplay rules remain the V1.0 ruleset.
+
+Final V1.1 UI changes:
+- phone-first full-viewport layout with no page scrolling in the title/gameplay flow;
+- PWA/standalone launch support for browser-chrome-free home-screen play;
+- title/menu proportions tuned from iPhone screenshots;
+- Special Profession and player skills combined into one combat HUD;
+- Boss name/skills/CD integrated into the same tabbed HUD instead of stacking separate panels;
+- 4×4 board size is protected as the primary gameplay surface;
+- Boss expansion preserves the same four-column/cell scale for the 4×6 battlefield instead of shrinking the board to make HUD content fit;
+- browser and PWA Boss 4×6 layouts were accepted from user-provided iPhone screenshots;
+- final HUD cleanup removes the duplicate profession emoji from the player tab.
+
+B36/v0.7 and all earlier v0.x builds remain historical archives.
 
 ## Type 02 Version 1 POC history
 Status: **POC TESTING — NOT FINAL**.
@@ -47,28 +64,17 @@ v0.3 changes the core hypothesis:
 
 > **The board itself is the city. One 4×4 board is one district; multiple districts form the complete city.**
 
-Current POC rules:
-- direct placement rather than whole-board swipe;
-- four building families: Residential, Industry, Energy, Public;
-- orthogonally adjacent same-family + same-level buildings merge and can chain-upgrade;
-- 16 placements per district (test value);
-- one next-building reroll per district;
-- run starts in the center of a 3×3 district map;
-- after a district is completed, the player chooses an adjacent district to develop next;
-- completed districts remain visible as permanent city pieces;
-- all districts contribute to global Population, Finance, Energy and Happiness;
-- nine completed districts produce a final city score/summary.
-
-v0.3 deliberately omits roads, terrain, rivers, landmarks, disasters, cross-district adjacency bonuses, scenarios, meta-progression and final economy balance. These should be added only after the placement/merge/district-expansion loop is evaluated.
+Current active direction keeps **1024-style up/down/left/right swiping as the primary interaction**. The earlier tap/direct-placement experiment was rejected as too cumbersome. Strategic depth should live above the swipe layer through district rules, special tiles, district choice and city-level consequences.
 
 Detailed rules and open questions belong in `type-02/TYPE02_DESIGN.md`.
 
 ## Archive policy
 1. `rpg-v1-0/` is frozen as Type 01 Version 1 final.
 2. Type 01 Version 2 v0.x builds, including B36/v0.7, are historical archives.
-3. `rpg-v2-v1-0/` is Type 01 Version 2 final; only explicit maintenance/regression fixes may alter it.
-4. Do not create Type 01 Version 3 unless this policy is explicitly reversed.
-5. Type 02 versions remain in their own directories; previous POCs are preserved rather than overwritten.
+3. `rpg-v2-v1-0/` is a **frozen V1.0 archive / gameplay baseline** after V1.1 release.
+4. `rpg-v2-v1-1/` is the **final official Type 01 Version 2 release**. Treat it as frozen completed work after release; only explicit maintenance/regression fixes may alter it.
+5. Do not create Type 01 Version 3 unless this policy is explicitly reversed.
+6. Type 02 versions remain in their own directories; previous POCs are preserved rather than overwritten.
 
 ## Cross-conversation handoff rules
 1. Read this file and `type-02/TYPE02_DESIGN.md` before continuing Type 02 work.
