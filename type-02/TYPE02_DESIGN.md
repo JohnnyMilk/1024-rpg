@@ -1,141 +1,135 @@
 # 1024 RPG — Type 02 Design Notes
 
 ## Status
-**CONCEPT / POC TESTING — NOT FINAL**
+**VERSION 1 · POC TESTING — NOT FINAL**
 
-Type 02 is the next major 1024 game type after Type 01 completion. The current city / management direction is now being tested through a first playable POC. Nothing in this document should be treated as locked gameplay unless explicitly marked as decided later.
+Type 02 is a new city / management 1024 game type. Its current core hypothesis is:
 
-## Current direction
-The first concept direction is a **city / management simulation built around 1024-style merging**.
+> **4×4 board = short-term planning / progression engine**  
+> **LIVE CITY = long-term management / visible results**
 
-The important distinction from Type 01 is that the 4×4 board is no longer the entire game world. It is being tested as the player's **planning / construction / decision area**, while another part of the screen shows the simulated city as a visible result of those decisions.
-
-Working design idea:
-
-> **4×4 board = decisions**  
-> **Simulation view = results**
-
-## Version 1 · v0.1 POC — 2026-09-17
-Status: **PLAYABLE PROOF OF CONCEPT / TESTING**
-
+## Version 1 · v0.1 — archived POC
 Path: `type-02-v1-v0-1/`
 
-The purpose of v0.1 is not balance or final rules. It tests whether a 1024 planning board and a visible management simulation can feel like one coherent game.
+v0.1 tested four building families directly on the 4×4 board: Residential, Industry, Energy and Public. Only same-family + same-level tiles could merge. It successfully demonstrated the board + LIVE CITY presentation, but playtesting exposed a structural problem: too many incompatible tile types fill a 16-cell board quickly and cause premature board lock.
 
-Implemented in the POC:
-- 4×4 swipe board with touch and keyboard controls.
-- Four building families: Residential, Industry / Commerce, Energy / Infrastructure, Public / Environment.
-- Only buildings of the same family and same level merge.
-- A valid board movement advances the simulation by one day.
-- A new Level 1 building is generated after each valid movement.
-- Population, Finance, Energy and Happiness are live management meters.
-- The meters are linked: housing creates population and demand; industry creates jobs/income; energy creates supply; public development improves happiness but adds cost.
-- A separate LIVE CITY panel visualizes the accumulated city using buildings, traffic and pedestrians.
-- The city classification changes as population grows.
-- City log gives lightweight feedback on merges, energy pressure, employment pressure and satisfaction.
-- A management event appears every 7 days and presents two choices with economic / happiness consequences.
-- Board lock ends the POC run.
-- Reset is available for repeated testing.
+v0.1 is retained as a playable design archive and should not be overwritten by v0.2 development.
 
-### v0.1 deliberate simplifications
-- No save system yet.
-- No formal victory condition.
-- No fixed run length.
-- No meta-progression.
-- The LIVE CITY is a visual representation of the board totals, not a second spatial simulation grid.
-- Building balance, spawn probabilities and formulas are provisional.
-- Events are deliberately few and simple.
+## Version 1 · v0.2 — current POC
+Path: `type-02-v1-v0-2/`
 
-These limitations are intentional: v0.1 exists to test the core feeling before expanding systems.
+Status: **PLAYABLE / CURRENT TEST BUILD**
 
-## Concept: merge a city instead of heroes
-Instead of merging hero numbers, the player merges buildings or facilities.
+v0.2 changes the core loop instead of merely tuning v0.1 spawn rates.
 
-Example residential chain:
+### 1. Single merge chain
+The 4×4 planning board no longer contains four building categories. Board tiles only represent development level. Equal levels can merge regardless of the future city investment category.
 
-| Level | Example | Possible effect |
-|---|---|---|
-| 1 | 🏠 Small House | small population capacity |
-| 2 | 🏘️ Residence | more population capacity |
-| 3 | 🏢 Apartment | larger population capacity |
-| 4 | 🌆 High-rise | major population capacity |
+This keeps the spatial / merge puzzle close to classic 1024 and prevents category fragmentation from being the main source of board lock.
 
-Two matching buildings merge into the next level, preserving the familiar 1024 progression while giving the merged object a simulation meaning.
+### 2. Quarterly planning limit
+A quarter contains **12 valid planning moves** in the current POC.
 
-## Building families under test
-### Residential
-Supports population and housing capacity.
+- Invalid swipes do not consume a move.
+- Each valid move spawns a new development tile.
+- The board does not continue until it naturally locks.
+- After the 12th valid move, planning stops and the quarterly investment phase begins.
+- 12 is a test value, not a final rule.
 
-### Industry / Commerce
-Creates jobs and income, with higher infrastructure demand.
+The purpose is to avoid requiring a long traditional 1024 session for a small amount of city progression.
 
-### Energy / Infrastructure
-Provides power capacity needed for the city to function.
+### 3. Every merge produces a development right
+Successful merges are recorded during the quarter. The resulting merge level determines the level of the development right.
 
-### Public / Environment
-Improves happiness and quality of life, with maintenance cost.
+Example:
+- LV1 + LV1 → LV2 development right
+- LV2 + LV2 → LV3 development right
+- Higher merges create correspondingly stronger development rights
 
-## Simulation layer
-Type 02 explores a visible simulation area outside the 4×4 board. In v0.1 it shows buildings, population activity and traffic as a visual result of the current planning board.
+The player therefore receives value throughout the short 1024 planning phase instead of only being rewarded for the single highest tile at the end.
 
-The purpose is to make the player feel that the 1024 board is **causing something to happen**, rather than being the complete presentation by itself.
+### 4. Quarterly investment phase
+At the end of the 12 moves, accumulated development rights can be assigned to:
+- 🏠 Residential
+- 🏭 Industry / Commerce
+- ⚡ Energy / Infrastructure
+- 🌳 Public / Environment
 
-## Turn / time model under test
-v0.1 currently uses:
+Higher-level development rights contribute more development capacity.
 
-> **Valid Swipe / Build → Simulate → Resolve resources → Event when due → Next day**
+This separates the two decisions:
 
-An invalid swipe does not advance time.
+> **1024 board: How much development capacity can I create?**  
+> **City management: Where should I invest that capacity?**
 
-## Management meters under test
-### Population
-Driven mainly by residential capacity and supported by employment.
+### 5. Board resets; city persists
+After quarterly investment and simulation settlement:
+- the 4×4 board resets;
+- the next quarter begins with a fresh planning puzzle;
+- accumulated city development persists;
+- Population, Finance, Energy and Happiness continue across quarters.
 
-### Finance
-Industry and population generate income; developed city systems create costs.
+The intended rhythm is:
 
-### Energy
-Energy buildings provide supply while residential, industry and public buildings create demand.
+> **12-move planning → development allocation → city simulation → event → next quarter**
 
-### Happiness
-Affected by public development, industry pressure, employment and energy conditions.
+Four quarters advance the year counter.
 
-The goal is to create **trade-offs**, not a dashboard full of independent numbers.
+### 6. City simulation
+The current POC continues to track:
+- Population
+- Finance
+- Energy
+- Happiness
+- Residential development
+- Industry / Commerce development
+- Energy development
+- Public development
 
-## Events
-v0.1 includes lightweight city events every seven days. Current examples include a weekend market, power-grid maintenance and urban greening proposals. Event content and timing are provisional.
+The LIVE CITY visualization persists across quarters and changes as the accumulated city grows.
 
-## Possible overall format
-A promising direction remains a **short-session city-management roguelite / simulation run** rather than a full SimCity clone.
+### 7. Events
+A lightweight city event occurs after quarterly settlement. Current events are placeholders intended to test pacing between planning rounds.
 
-Possible loop:
+### 8. Vehicle animation correction
+v0.1's traffic emoji orientation could make vehicles appear to reverse. v0.2 gives opposing traffic its own direction animation and mirrors the vehicle travelling in the opposite direction so its front matches its movement.
 
-> **Build → Simulate → Adapt → Event → Build again**
+## Current v0.2 design goal
+The main question is no longer whether a city can be represented by different tile categories on the board. v0.2 tests whether this loop is enjoyable:
 
-Victory conditions, failure conditions, scenario objectives and meta-progression remain open.
+> **short 1024 puzzle → meaningful development rewards → management allocation → visible city consequence → repeat**
 
-## Design principles for Type 02
-1. It must feel fundamentally different from Type 01.
-2. 1024 merging should remain meaningful, not merely decorative.
-3. The board should create consequences in a larger simulation.
-4. Players should be able to **see the result** of their management decisions.
-5. Meters should interact and create trade-offs.
-6. Do not build a full city simulator before proving the core loop.
-7. Start with an MVP / POC and expand only after the loop is fun.
+## Deliberately provisional values
+The following are NOT final:
+- 12 moves per quarter
+- development-right power scaling
+- starting cash
+- population / job / energy formulas
+- income and maintenance formulas
+- event frequency and effects
+- victory / failure conditions
+- total run length
 
-## Open questions after v0.1
-- Is 4×4 still the best planning-board size?
-- Does one valid swipe = one day feel natural in play?
-- Are four building families enough, too many or too few?
-- Should new building generation remain random or become a management choice?
-- Should the LIVE CITY become a spatial simulation rather than a visualization?
-- What causes a run to end beyond board lock?
-- Is there a win condition, score target, survival target or scenario objective?
-- How much randomness should come from events versus tile generation?
-- Should the player be able to directly intervene in the simulation view?
-- Should Type 02 remain specifically city-themed or eventually support other management scenarios?
+## Design principles
+1. Type 02 must remain fundamentally different from Type 01.
+2. The 1024 board should be fun as a short planning puzzle, not become a long mandatory grind.
+3. Every meaningful merge should contribute to city development.
+4. City management choices should happen frequently enough to provide feedback.
+5. Board and city should affect one another over time.
+6. LIVE CITY should visibly communicate the results of player decisions.
+7. Keep POCs small until the core loop is proven.
+
+## Next questions after v0.2 testing
+- Are 12 valid moves too few, too many or appropriate?
+- Does resetting the board every quarter feel refreshing or wasteful?
+- Is assigning each development right individually too slow?
+- Should unused development rights carry over?
+- Should city conditions modify the next quarter's board or move count?
+- Should higher development rights unlock special buildings rather than only provide larger numerical growth?
+- What should create failure pressure: finance, energy, happiness, population, time, or scenarios?
+- How long should one complete city run last?
 
 ## Current working label
-**TYPE 02 — CITY / MANAGEMENT SIMULATION**
+**TYPE 02 — 1024 CITY / MANAGEMENT SIMULATION**
 
-No final game title has been selected. `1024 CITY` is used only as the v0.1 POC display name.
+No final game title has been selected.
