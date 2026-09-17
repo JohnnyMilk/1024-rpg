@@ -1,0 +1,11 @@
+{
+  "name": "1024 RPG · Type 01 Version 2",
+  "short_name": "1024 RPG",
+  "description": "1024 RPG Type 01 Version 2 · V1.1 Mobile UI Release",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0d10",
+  "theme_color": "#0b0d10"
+}
